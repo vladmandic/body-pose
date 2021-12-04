@@ -58,7 +58,8 @@
 
 - Video rendering
 - Improve camera control
-- SMPL to Inverse Kinematics
+- Bone controller: <https://doc.babylonjs.com/divingDeeper/mesh/bonesSkeletons#boneikcontroller>
+- Inspector: <https://doc.babylonjs.com/toolsAndResources/tools/inspector#bones-viewer>
 
 <br>
 
