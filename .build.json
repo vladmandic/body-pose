@@ -1,0 +1,49 @@
+{
+  "log": {
+    "enabled": false,
+    "debug": false,
+    "console": true
+  },
+  "profiles": {
+    "production": ["clean", "compile", "lint"],
+    "development": ["serve", "watch", "compile"]
+  },
+  "clean": {
+    "locations": []
+  },
+  "lint": {
+    "locations": [ "client/*.ts" ],
+    "rules": { }
+  },
+  "watch": {
+    "locations": [ "client/**/*" ]
+  },
+  "serve": {
+    "sslKey": "node_modules/@vladmandic/build/cert/https.key",
+    "sslCrt": "node_modules/@vladmandic/build/cert/https.crt",
+    "httpPort": 8000,
+    "httpsPort": 8001,
+    "documentRoot": ".",
+    "defaultFolder": "client",
+    "defaultFile": "index.html"
+  },
+  "build": {
+    "global": {
+      "target": "esnext",
+      "sourcemap": true,
+      "treeShaking": true,
+      "ignoreAnnotations": false,
+      "minify": false,
+      "banner": { "js": "/*\n  Human: Pose Analytics Demo\n  author: <https://github.com/vladmandic>'\n*/\n" }
+    },
+    "targets": [
+      {
+        "format": "esm",
+        "platform": "browser",
+        "name": "index",
+        "input": "client/index.ts",
+        "output": "client/index.js"
+      }
+   ]
+  }
+}
