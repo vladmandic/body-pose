@@ -6,6 +6,7 @@ export interface Global extends Window {
   camera: BABYLON.ArcRotateCamera,
   light: BABYLON.DirectionalLight,
   meshes: BABYLON.AbstractMesh[],
+  pose: BABYLON.Mesh,
 }
 declare let window: Global;
 
@@ -20,13 +21,14 @@ export class Scene {
   shadows!: BABYLON.ShadowGenerator;
   environment!: BABYLON.EnvironmentHelper;
   skeleton?: BABYLON.Skeleton | undefined;
+  pose: BABYLON.Mesh | undefined;
 
   constructor(outputCanvas: HTMLCanvasElement) {
     console.log('creating scene:', outputCanvas.id);
     this.canvas = outputCanvas;
     // engine & scene
     this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
-    this.engine.enableOfflineSupport = false;
+    // this.engine.enableOfflineSupport = false;
     BABYLON.Animation.AllowMatricesInterpolation = true;
     this.scene = new BABYLON.Scene(this.engine);
     this.material = new BABYLON.StandardMaterial('material', this.scene);
@@ -37,9 +39,6 @@ export class Scene {
     this.engine.runRenderLoop(() => this.scene.render());
     window.engine = this.engine;
     window.scene = this.scene;
-    window.light = this.light;
-    window.meshes = this.scene.meshes;
-    window.camera = this.camera;
   }
 
   defaults() {
@@ -78,5 +77,10 @@ export class Scene {
     this.camera.target = new BABYLON.Vector3(0.23, 0.83, 0);
     this.light.position = new BABYLON.Vector3(0.0, 2.0, 5.0);
     this.light.direction = new BABYLON.Vector3(-0.5, 1, -2);
+    this.pose = BABYLON.MeshBuilder.CreateBox('pose', {}, this.scene);
+    window.light = this.light;
+    window.meshes = this.scene.meshes;
+    window.camera = this.camera;
+    window.pose = this.pose;
   }
 }

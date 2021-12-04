@@ -11,8 +11,7 @@ export type Result = null | {
   edges: Edge[], // each edge instruct which points to connect to create a joint
   joints: Joint[], // names of each joint
   boxes: Box[][], // frame x body x [left, top, width, height, confidence]
-  poses2d: Point2D[][][], // frame x body x point
-  poses3d: Point3D[][][], // frame x body x point
+  poses: Point3D[][][], // frame x body x point
   timestamps: number[], // timestamp of each frame
 }
 
@@ -27,7 +26,8 @@ export const skeletons = [
   '', // All the joints that the model was trained on.
 ];
 
-export const parts = {
+export const parts: Record<string, string[]> = {
+  all: [], // use all keypoints
   smpl: [ // smpl 24 keypoints
     'lhip',
     'rhip',

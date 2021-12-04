@@ -5,6 +5,8 @@ import json
 import argparse
 import signal
 import cv2
+import decimal
+import numpy as np
 import tensorflow as tf
 from distutils.util import strtobool
 import matplotlib
@@ -16,8 +18,7 @@ class JSON:
     self.resolution = [0, 0]
     self.frames = 0
     self.boxes = []
-    self.poses3d = []
-    self.poses2d = []
+    self.poses = []
     self.joints = None
     self.edges = None
     self.timestamps = []
@@ -55,7 +56,7 @@ def predict(tensor, timestamp):
     return None, None, None, None, None
   t0 = now()
   # run inference
-  pred = model.detect_poses(tensor,
+  result = model.detect_poses(tensor,
     default_fov_degrees=args.fov,
     internal_batch_size=args.batch,
     num_aug=args.augmentations,
@@ -67,19 +68,24 @@ def predict(tensor, timestamp):
     antialias_factor=1,
     suppress_implausible_poses=bool(args.suppress)
   )
-  pred = tf.nest.map_structure(lambda x: x.numpy(), pred) # convert tensors to numpy arrays
   res.resolution = [tensor.shape[1], tensor.shape[0]]
   res.timestamps.append(timestamp)
-  res.boxes.append(pred['boxes'].tolist())
-  res.poses3d.append(pred['poses3d'].tolist())
-  res.poses2d.append(pred['poses2d'].tolist())
+  if bool(args.round): # round and convert f32 point coordinates to uint16
+    points2d = tf.cast(tf.math.round(result['poses2d']), tf.int16).numpy()
+    points3d = tf.cast(tf.math.round(result['poses3d']), tf.int16).numpy()
+  else:
+    points2d = result['poses2d'].numpy()
+    points3d = result['poses3d'].numpy()
+  boxes = result['boxes'].numpy()
+  res.boxes.append(boxes.tolist())
+  res.poses.append(points3d.tolist())
   joints = model.per_skeleton_joint_names[args.skeleton].numpy().astype(str)
   edges = model.per_skeleton_joint_edges[args.skeleton].numpy()
   res.joints = joints.tolist()
   res.edges = edges.tolist()
   if bool(args.verbose):
     print('process time: {:.3f}sec'.format(now() - t0))
-  return pred['boxes'], pred['poses3d'], pred['poses2d'], joints, edges
+  return boxes, points3d, points2d, joints, edges
 
 
 def predictImage(input):
@@ -160,6 +166,8 @@ if __name__ == '__main__':
   a.add_argument('--augmentations', type=int,       default=5,   help='how many variations of detection to run')
   a.add_argument('--average',       type=strtobool, default=1,   help='run avarage on augmentation variations')
   a.add_argument('--suppress',      type=strtobool, default=1,   help='suppress implausible poses')
+  a.add_argument('--round',         type=strtobool, default=1,   help='round coordinates')
+  a.add_argument('--minify',        type=strtobool, default=1,   help='minify json output')
   a.add_argument('--minconfidence', type=float,     default=0.3, help='minimum detection confidence')
   a.add_argument('--iou',           type=float,     default=0.7, help='iou threshold for overlaps')
   args = a.parse_args()
@@ -174,7 +182,10 @@ if __name__ == '__main__':
   else:
     print('error: image or video not specified')
   if args.json is not None:
-    obj = json.dumps(res.__dict__, indent = 2)
+    if bool(args.minify):
+      obj = json.dumps(res.__dict__, separators = (',', ':'))
+    else:
+      obj = json.dumps(res.__dict__, indent = 2)
     with open(args.json, "w") as outfile:
       outfile.write(obj)
       print('results written to:', args.json)

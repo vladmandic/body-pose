@@ -2,7 +2,11 @@
 
 ## Usage
 
-[**Download Models**](models/README.md)
+### Process
+
+- [**Download Models**](models/README.md)
+- [**API Specs**](API.md)  
+- [**JSON and Skeleton Specs**](client/types.ts)
 
 > run.py
 
@@ -11,6 +15,8 @@
       --image               image file
       --video               video file
       --json                write results to json file
+      --round               round coordiantes in json outputs
+      --minify              minify json output
       --verbose             verbose logging
       --model               model used for predictions
       --skipms              skip time between frames in miliseconds
@@ -24,8 +30,6 @@
       --suppress            suppress implausible poses
       --minconfidence       minimum detection confidence
       --iou                 iou threshold for overlaps
-
-[**API Specs**](API.md)
 
 ### Example
 
@@ -43,9 +47,20 @@
     video processed: 14 frames in 4.8sec
     results written to: baseball-pitch.json
 
+<br>
+
+### Visualize
+
+> npm run dev  
+<https://localhost:8001>
+
 ## ToDo
 
+- Video rendering
+- Improve camera control
 - SMPL to Inverse Kinematics
+
+<br>
 
 ## Credits
 
