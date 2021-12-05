@@ -17,7 +17,6 @@ async function body(frame: number, edges: Edge[], joints: Joint[], poses: Point3
       const part = `${joints[i]}${person}`;
       const pt0 = new BABYLON.Vector3(pose[edges[i][0]][0] / canvas.width, 1 - pose[edges[i][0]][1] / canvas.height, 2 * pose[edges[i][0]][2] / (canvas.width + canvas.height));
       const pt1 = new BABYLON.Vector3(pose[edges[i][1]][0] / canvas.width, 1 - pose[edges[i][1]][1] / canvas.height, 2 * pose[edges[i][1]][2] / (canvas.width + canvas.height));
-      if (joints[i] === 'head') console.log(person, pt0);
       const path = [pt0, pt1];
       const radius = skeleton === 'all' ? 0.02 : 0.04;
       if (!tubes[part] || tubes[part].isDisposed()) { // body part seen for the first time

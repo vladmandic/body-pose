@@ -33,7 +33,9 @@
 
 ### Example
 
-> ./run.py --video media/baseball-pitch.mp4 --json baseball-pitch.json --skipms 2000 --verbose true
+*Using default model and processing parameters*
+
+> ./run.py --video media/baseball-pitch.mp4 --json baseball-pitch.json
 
     options: {'image': None, 'video': 'media/baseball-pitch.mp4', 'json': 'baseball-pitch.json', 'verbose': 1, 'model': 'models/metrabs_mob3l_y4t', 'skipms': 2000, 'plot': 0, 'fov': 55, 'batch': 64, 'maxpeople': -1, 'skeleton': '', 'augmentations': 5, 'average': 1, 'suppress': 1, 'minconfidence': 0.3, 'iou': 0.7}
     tensorflow 2.7.0
@@ -47,6 +49,13 @@
     video processed: 14 frames in 4.8sec
     results written to: baseball-pitch.json
 
+### Model Requirements
+
+Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
+- Tiny => 2GB
+- Small => 4GB
+- Large => 8GB
+
 <br>
 
 ### Visualize
@@ -57,7 +66,6 @@
 ## ToDo
 
 - Output smoothening
-- Improve camera control
 - Bone controller: <https://doc.babylonjs.com/divingDeeper/mesh/bonesSkeletons#boneikcontroller>
 - Inspector: <https://doc.babylonjs.com/toolsAndResources/tools/inspector#bones-viewer>
 
