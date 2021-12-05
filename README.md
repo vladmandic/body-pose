@@ -56,7 +56,7 @@
 
 ## ToDo
 
-- Video rendering
+- Output smoothening
 - Improve camera control
 - Bone controller: <https://doc.babylonjs.com/divingDeeper/mesh/bonesSkeletons#boneikcontroller>
 - Inspector: <https://doc.babylonjs.com/toolsAndResources/tools/inspector#bones-viewer>

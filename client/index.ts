@@ -2,7 +2,21 @@ import * as mesh from './mesh';
 import type { Result } from './types';
 import { parts } from './types';
 
-const samples = ['', 'media/daz3d-ella.json', 'media/daz3d-selina.json', 'media/daz3d-zoe.json', 'media/baseball-pitch.json'];
+const samples = [
+  '',
+  'media/dance.json',
+  'media/yoga.json',
+  'media/basketball-shoot.json',
+  'media/basketball-dribble.json',
+  'media/basketball-dunk.json',
+  'media/baseball-hit.json',
+  'media/football-catch.json',
+  'media/football-run.json',
+  'media/dance-video.json',
+  'media/yoga-video.json',
+  'media/basketball-dunk-video.json',
+  'media/baseball-pitch-video.json',
+];
 let json: Result = null;
 
 const dom = { // pointers to dom objects
@@ -19,6 +33,23 @@ const log = (...msg: unknown[]) => {
   dom.log.innerText += msg.join(' ') + '\n';
   console.log(...msg);
 };
+
+async function render() {
+  if (!json) return;
+  let frame = 0;
+  if (json.options.image) {
+    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    dom.status.innerText = 'image';
+  }
+  if (json.options.video) {
+    while ((1000 * dom.video.currentTime) > (json.timestamps[frame])) frame++; // find closest frame
+    dom.status.innerText = `frame: ${frame}`;
+    if (frame >= json.frames) frame = json.frames - 1;
+    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    if (dom.video.paused) setTimeout(render, 1000);
+    else requestAnimationFrame(render);
+  }
+}
 
 async function loadVideo(url: string) {
   dom.status.innerText = 'loading video...';
@@ -54,10 +85,6 @@ async function loadImage(url: string) {
   let poses = '';
   if (json) for (const box of json.boxes[0]) poses += Math.round(1000 * box[4]) / 10 + '% ';
   log(`image: ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
-  dom.status.innerText = 'rendering...';
-  await mesh.dispose();
-  await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
-  dom.status.innerText = 'done...';
 }
 
 async function processInput(url: string) {
@@ -85,6 +112,8 @@ async function processInput(url: string) {
   console.log({ json });
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
+  await mesh.dispose();
+  render();
 }
 
 async function enumerateInputs() {
@@ -108,7 +137,7 @@ async function enumerateOutputs() {
     dom.skeleton.appendChild(skeleton);
   }
   dom.skeleton.onchange = () => { // event when sample is selected
-    processInput(dom.sample.options[dom.sample.options.selectedIndex].value);
+    if (dom.sample.options.selectedIndex > 0) processInput(dom.sample.options[dom.sample.options.selectedIndex].value);
   };
 }
 

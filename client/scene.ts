@@ -6,7 +6,6 @@ export interface Global extends Window {
   camera: BABYLON.ArcRotateCamera,
   light: BABYLON.DirectionalLight,
   meshes: BABYLON.AbstractMesh[],
-  pose: BABYLON.Mesh,
 }
 declare let window: Global;
 
@@ -20,8 +19,8 @@ export class Scene {
   ambient!: BABYLON.HemisphericLight;
   shadows!: BABYLON.ShadowGenerator;
   environment!: BABYLON.EnvironmentHelper;
+  skybox: BABYLON.Mesh | undefined;
   skeleton?: BABYLON.Skeleton | undefined;
-  pose: BABYLON.Mesh | undefined;
 
   constructor(outputCanvas: HTMLCanvasElement) {
     console.log('creating scene:', outputCanvas.id);
@@ -52,15 +51,19 @@ export class Scene {
     // environment
     if (this.environment) this.environment.dispose();
     this.environment = this.scene.createDefaultEnvironment({
-      createSkybox: true,
-      skyboxTexture: 'media/backgroundSkybox.dds',
-      createGround: true,
-      groundTexture: 'media/backgroundGround.png',
+      createSkybox: false,
+      groundColor: BABYLON.Color3.Gray(),
       enableGroundShadow: true,
-      groundColor: BABYLON.Color3.Red(),
-      environmentTexture: 'media/environmentSpecular.env',
     }) as BABYLON.EnvironmentHelper;
-    this.environment.setMainColor(BABYLON.Color3.Gray());
+    // skybox
+    if (this.skybox) this.skybox.dispose();
+    this.skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 50.0 }, this.scene);
+    const skyboxMaterial = new BABYLON.StandardMaterial('skyBox', this.scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture('media/skybox', this.scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.disableLighting = true;
+    this.skybox.material = skyboxMaterial;
     // lights
     if (this.ambient) this.ambient.dispose();
     this.ambient = new BABYLON.HemisphericLight('spheric', new BABYLON.Vector3(0, 1, 0), this.scene);
@@ -73,14 +76,13 @@ export class Scene {
     this.shadows = new BABYLON.ShadowGenerator(1024, this.light);
     this.shadows.useBlurExponentialShadowMap = true;
     this.shadows.blurKernel = 32;
-    this.camera.position = new BABYLON.Vector3(0.27, 0.81, -0.26);
+    // this.camera.position = new BABYLON.Vector3(0.27, 0.81, -0.26);
+    this.camera.position = new BABYLON.Vector3(0.0, 1.0, -1.0);
     this.camera.target = new BABYLON.Vector3(0.23, 0.83, 0);
     this.light.position = new BABYLON.Vector3(0.0, 2.0, 5.0);
     this.light.direction = new BABYLON.Vector3(-0.5, 1, -2);
-    this.pose = BABYLON.MeshBuilder.CreateBox('pose', {}, this.scene);
     window.light = this.light;
     window.meshes = this.scene.meshes;
     window.camera = this.camera;
-    window.pose = this.pose;
   }
 }
