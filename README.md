@@ -49,8 +49,9 @@
     video processed: 14 frames in 4.8sec
     results written to: baseball-pitch.json
 
-### Model Requirements
+### Requirements
 
+TensorFlow with CUDA for GPU acceleration  
 Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
 - Tiny => 2GB
 - Small => 4GB
