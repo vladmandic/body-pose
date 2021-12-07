@@ -1,6 +1,6 @@
 import * as mesh from './mesh';
 import type { Result } from './types';
-import { parts } from './types';
+import { parts } from './constants';
 
 const samples = [
   '',

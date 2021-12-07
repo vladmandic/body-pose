@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import { Scene } from './scene';
-import { parts } from './types';
+import { parts } from './constants';
 import type { Result, Joint, Edge, Point3D } from './types';
 
 let t: Scene;

@@ -1,10 +1,17 @@
 # Human Pose Analysis
 
+### Requirements
+
+TensorFlow with CUDA for GPU acceleration  
+Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
+- [**Tiny**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_mob3l_y4t_20211019.zip) (using MobileNetV3 backbone with YOLOv4-Tiny detector) => 2GB
+- [**Small**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2s_y4_20211026.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 4GB
+- [**Large**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_20211019.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 8GB
+- [**Large 360**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_360_20211019.zip) (same as large but tuned for occluded body parts) => 8GB
 ## Usage
 
 ### Process
 
-- [**Download Models**](models/README.md)
 - [**API Specs**](API.md)  
 - [**JSON and Skeleton Specs**](client/types.ts)
 
@@ -48,14 +55,6 @@
     ...
     video processed: 14 frames in 4.8sec
     results written to: baseball-pitch.json
-
-### Requirements
-
-TensorFlow with CUDA for GPU acceleration  
-Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
-- Tiny => 2GB
-- Small => 4GB
-- Large => 8GB
 
 <br>
 

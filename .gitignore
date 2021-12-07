@@ -1,7 +1,7 @@
 node_modules
-models/metrabs_eff2l_y4/*
-models/metrabs_eff2l_y4_360/*
-models/metrabs_eff2s_y4/*
-models/metrabs_mob3l_y4t/*
+models/tiny/*
+models/small/*
+models/large/*
+models/large360/*
 media/*.mp4
 media/*.webm
