@@ -1,11 +1,11 @@
 export const skeletons = [
   'smpl_24', // SMPL body model
-  'coco_19', // COCO joints including pelvis at the midpoint of the hips and neck at the midpoint of the shoulders as in CMU-Panoptic.
+  'coco_19', // COCO joints including pelvis at the midpoint of the hips and neck at the midpoint of the shoulders as in CMU-Panoptic
   'h36m_17', // Most common Human3.6M joint convention
   'h36m_25', // Extended Human3.6M joint set
   'mpi_inf_3dhp_17', // MPI-INF-3DHP main joints (same as the MuPoTS joints)
   'mpi_inf_3dhp_28', // full MPI-INF-3DHP joint set
-  'smpl+head_30', // SMPL joints plus face keypoints from COCO and the head top from MPI-INF-3DHP (recommended for visualization as SMPL_24 has no face keypoints).
+  'smpl+head_30', // SMPL joints plus face keypoints from COCO and the head top from MPI-INF-3DHP
   '', // All the joints that the model was trained on.
 ];
 
