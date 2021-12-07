@@ -194,9 +194,9 @@ if __name__ == '__main__':
     else:
       obj = json.dumps(res.__dict__, indent = 2)
     if args.json == 'true':
-      output = args.json
-    else:
       output = input + '.json'
+    else:
+      output = args.json
     with open(output, "w") as outfile:
       outfile.write(obj)
-      print('results written to:', args.json)
+      print('results written to:', output)
