@@ -4,19 +4,6 @@ import { skeletons } from './constants';
 
 const samples = [
   '',
-  'media/dance.json',
-  'smplhead.json',
-  'h36.json',
-  'media/yoga.json',
-  'media/basketball-shoot.json',
-  'media/basketball-dribble.json',
-  'media/basketball-dunk.json',
-  'media/baseball-hit.json',
-  'media/football-catch.json',
-  'media/football-run.json',
-  'media/dance-video.json',
-  'media/basketball-dunk-video.json',
-  'media/baseball-pitch-video.json',
 ];
 let json: Result = null;
 
@@ -96,7 +83,8 @@ async function processInput(url: string) {
   dom.status.innerText = 'loading data...';
   const res = await fetch(url);
   if (!res.ok) {
-    log(`error loading: ${res.url} code: ${res.status} error: ${res.statusText}`);
+    log(`error loading: ${res.url} code: ${res.status} ${res.statusText !== '' ? 'error:' + res.statusText : ''}`);
+    console.log(res);
     return;
   }
   json = await res.json();

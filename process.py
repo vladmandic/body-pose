@@ -180,10 +180,12 @@ if __name__ == '__main__':
   res.options = vars(args)
   if args.image is not None:
     loadModel()
-    predictImage(args.image)
+    input = args.image
+    predictImage(input)
   elif args.video is not None:
     loadModel()
-    predictVideo(args.video)
+    input = args.video
+    predictVideo(input)
   else:
     print('error: image or video not specified')
   if args.json is not None:
@@ -191,6 +193,10 @@ if __name__ == '__main__':
       obj = json.dumps(res.__dict__, separators = (',', ':'))
     else:
       obj = json.dumps(res.__dict__, indent = 2)
-    with open(args.json, "w") as outfile:
+    if args.json == 'true':
+      output = args.json
+    else:
+      output = input + '.json'
+    with open(output, "w") as outfile:
       outfile.write(obj)
       print('results written to:', args.json)

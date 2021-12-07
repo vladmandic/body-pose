@@ -14,7 +14,7 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 - [**Constants**](client/constants.ts) (e.g., skeleton definitions with joints and connected edges)
 ### Process
 
-> run.py
+> process.py
 
     arguments:
       --help                show this help message

@@ -61,7 +61,7 @@ export class Scene {
     this.skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 50.0 }, this.scene);
     const skyboxMaterial = new BABYLON.StandardMaterial('skyBox', this.scene);
     skyboxMaterial.backFaceCulling = false;
-    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture('media/skybox', this.scene);
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture('assets/skybox', this.scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.disableLighting = true;
     this.skybox.material = skyboxMaterial;
