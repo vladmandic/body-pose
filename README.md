@@ -10,10 +10,9 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 - [**Large 360**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_360_20211019.zip) (same as large but tuned for occluded body parts) => 8GB
 ## Usage
 
+- [**Output Specs**](client/types.ts) (e.g. json format used)
+- [**Constants**](client/constants.ts) (e.g., skeleton definitions with joints and connected edges)
 ### Process
-
-- [**API Specs**](API.md)  
-- [**JSON and Skeleton Specs**](client/types.ts)
 
 > run.py
 

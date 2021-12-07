@@ -1,10 +1,12 @@
 import * as mesh from './mesh';
 import type { Result } from './types';
-import { parts } from './constants';
+import { skeletons } from './constants';
 
 const samples = [
   '',
   'media/dance.json',
+  'smplhead.json',
+  'h36.json',
   'media/yoga.json',
   'media/basketball-shoot.json',
   'media/basketball-dribble.json',
@@ -13,7 +15,6 @@ const samples = [
   'media/football-catch.json',
   'media/football-run.json',
   'media/dance-video.json',
-  'media/yoga-video.json',
   'media/basketball-dunk-video.json',
   'media/baseball-pitch-video.json',
 ];
@@ -36,13 +37,15 @@ const log = (...msg: unknown[]) => {
 
 async function render() {
   if (!json) return;
-  let frame = 0;
   if (json.options.image) {
-    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
+    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
+    let frame = 0;
     while ((1000 * dom.video.currentTime) > (json.timestamps[frame])) frame++; // find closest frame
+    if (frame === 0) log('rendering skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
     dom.status.innerText = `frame: ${frame}`;
     if (frame >= json.frames) frame = json.frames - 1;
     await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
@@ -65,8 +68,9 @@ async function loadVideo(url: string) {
   dom.video.height = dom.video.videoHeight;
   dom.output.width = dom.video.width;
   dom.output.height = dom.video.height;
+  dom.output.style.height = 'auto';
   dom.status.innerText = '';
-  log(`video: ${url} | resolution: ${dom.video.videoWidth} x ${dom.video.videoHeight} | duration: ${Math.trunc(dom.video.duration)}`);
+  log(`video | ${url} | resolution: ${dom.video.videoWidth} x ${dom.video.videoHeight} | duration: ${Math.trunc(dom.video.duration)}`);
 }
 
 async function loadImage(url: string) {
@@ -82,9 +86,10 @@ async function loadImage(url: string) {
   dom.image.height = dom.image.naturalHeight;
   dom.output.width = dom.video.width;
   dom.output.height = dom.video.height;
+  dom.output.style.height = 'auto';
   let poses = '';
   if (json) for (const box of json.boxes[0]) poses += Math.round(1000 * box[4]) / 10 + '% ';
-  log(`image: ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
+  log(`image | ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
 }
 
 async function processInput(url: string) {
@@ -96,7 +101,8 @@ async function processInput(url: string) {
   }
   json = await res.json();
   if (!json) return;
-  log(`loaded: ${res.url}`);
+  log(`input | ${res.url}`);
+  json.options.skeleton = json.options.skeleton === '' ? 'all' : json.options.skeleton.replace('+', '_');
   const options = {
     augmentations: json.options.augmentations,
     average: json.options.average === 1,
@@ -107,9 +113,16 @@ async function processInput(url: string) {
     minconfidence: json.options.minconfidence,
     skipms: json.options.skipms,
     suppress: json.options.suppress === 1,
+    skeleton: json.options.skeleton,
+    joints: json.joints.length,
+    edges: json.edges.length,
+    model: json.options.model,
   };
-  log(`model: ${json.options.model} | options: ${JSON.stringify(options).replace(/"/g, '')}`);
+  log(`model | ${JSON.stringify(options).replace(/"|{|}/g, '').replace(/,/g, ' | ')}`);
   console.log({ json });
+  for (let i = 0; i < dom.skeleton.options.length; i++) {
+    if (json.options.skeleton !== 'all' && dom.skeleton.options.item(i)?.outerText === json.options.skeleton) dom.skeleton.selectedIndex = i;
+  }
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
   await mesh.dispose();
@@ -130,14 +143,17 @@ async function enumerateInputs() {
 }
 
 async function enumerateOutputs() {
-  for (const name of Object.keys(parts)) {
+  for (const name of Object.keys(skeletons)) {
     const skeleton = document.createElement('option');
     skeleton.value = name;
     skeleton.innerText = name;
     dom.skeleton.appendChild(skeleton);
   }
-  dom.skeleton.onchange = () => { // event when sample is selected
-    if (dom.sample.options.selectedIndex > 0) processInput(dom.sample.options[dom.sample.options.selectedIndex].value);
+  dom.skeleton.onchange = async () => { // event when sample is selected
+    if (dom.sample.options.selectedIndex > 0) {
+      await mesh.dispose();
+      render();
+    }
   };
 }
 

@@ -5,12 +5,11 @@ import json
 import argparse
 import signal
 import cv2
-import decimal
 import numpy as np
 import tensorflow as tf
 from distutils.util import strtobool
+import tensorflow.python.platform.build_info as build
 import matplotlib
-
 
 class JSON:
   def __init__(self):
@@ -42,7 +41,13 @@ def loadModel():
   # os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable cuda
   os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # reduce tf logging
   if bool(args.verbose):
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' # reduce tf logging
     print('tensorflow', tf.version.VERSION)
+  if len(tf.config.list_physical_devices('GPU')) < 1:
+    print('no gpu devices found')
+    exit(0)    
+  if bool(args.verbose):
+    print('cuda', build.build_info['cuda_version'])
     print('cpu devices:', tf.config.list_physical_devices('CPU'))
     print('gpu devices:', tf.config.list_physical_devices('GPU'))
   t0 = now()

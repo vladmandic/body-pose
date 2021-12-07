@@ -1,9 +1,15 @@
-export type Box = [number, number, number, number, number];
-export type Point2D = [number, number];
-export type Point3D = [number, number, number];
-export type Pose = Point3D[];
-export type Edge = [number, number];
-export type Joint = string;
+export type Box = [number, number, number, number, number]; // [x, y, width, height, confidence]
+export type Joint = string; // joint name corresponding to a point
+export type Point2D = [number, number]; // [x, y]
+export type Point3D = [number, number, number]; // [x, y, z]
+export type Pose = Point3D[]; // complete set of points in the pose
+export type Edge = [number, number]; // edge is defined by a pair of points defined in pose
+
+export type Skeleton = { // each skeleton type defines different joints and edges
+  joints: Array<Joint>,
+  edges: Array<Edge>,
+  suffix: string, // joints suffix to filter by when using `all` skeleton output
+}
 
 export type Result = null | {
   options: { // options used during processing
@@ -19,12 +25,13 @@ export type Result = null | {
     minconfidence: number,
     skipms: number,
     suppress: number,
+    skeleton: string,
   },
   frames: number, // total number of rendered frames
-  resolution: [number, number],
-  edges: Edge[], // each edge instruct which points to connect to create a joint
-  joints: Joint[], // names of each joint
-  boxes: Box[][], // frame x body x [left, top, width, height, confidence]
-  poses: Pose[][], // frame x body x pose [pose is a array of points]
-  timestamps: number[], // timestamp of each frame
+  resolution: [number, number], // input resolution in pixels
+  edges: Array<Edge>, // defined in model output as well as in `constants.ts`
+  joints: Array<Joint>, // defined in model output as well as in `constants.ts`
+  boxes: Array<Box[]>, // frame x body x [left, top, width, height, confidence]
+  poses: Array<Pose[]>, // frame x body x pose [pose is a array of points]
+  timestamps: Array<number>, // timestamp of each frame
 }

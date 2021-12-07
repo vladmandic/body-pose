@@ -38,6 +38,7 @@ export class Scene {
     this.engine.runRenderLoop(() => this.scene.render());
     window.engine = this.engine;
     window.scene = this.scene;
+    this.scene.debugLayer.show({ embedMode: true });
   }
 
   defaults() {
