@@ -1,4 +1,4 @@
-# Human Pose Analysis
+# Advanced 3D Body Pose Analysis
 
 ### Requirements
 
