@@ -4,6 +4,9 @@ models/tiny/*
 models/small/*
 models/large/*
 models/large360/*
+client/*.map
+*.zip
+*.tgz
 media/*.mp4
 media/*.webm
-client/*.map
+media/Soccer*

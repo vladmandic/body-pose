@@ -5,9 +5,9 @@
 TensorFlow with CUDA for GPU acceleration  
 Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
 - [**Tiny**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_mob3l_y4t_20211019.zip) (using MobileNetV3 backbone with YOLOv4-Tiny detector) => 2GB
-- [**Small**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2s_y4_20211026.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 4GB
-- [**Large**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_20211019.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 8GB
-- [**Large 360**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_360_20211019.zip) (same as large but tuned for occluded body parts) => 8GB
+- [**Small**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2s_y4_20211026.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 4GB (6GB recommended)
+- [**Large**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_20211019.zip) (using EfficientNetV2 backbone with YOLOv4 detector) => 8GB (10GB recommended)
+- [**Large 360**](https://omnomnom.vision.rwth-aachen.de/data/metrabs/metrabs_eff2l_y4_360_20211019.zip) (same as large but tuned for occluded body parts) => 8GB (12GB recommended)
 ## Usage
 
 - [**Output Specs**](client/types.ts) (e.g. json format used)
@@ -45,6 +45,7 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 
     options: {'image': None, 'video': 'media/baseball-pitch.mp4', 'json': 'baseball-pitch.json', 'verbose': 1, 'model': 'models/metrabs_mob3l_y4t', 'skipms': 2000, 'plot': 0, 'fov': 55, 'batch': 64, 'maxpeople': -1, 'skeleton': '', 'augmentations': 5, 'average': 1, 'suppress': 1, 'minconfidence': 0.3, 'iou': 0.7}
     tensorflow 2.7.0
+    cuda 11.2
     cpu devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU')]
     gpu devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
     model loaded: models/metrabs_mob3l_y4t in 27sec

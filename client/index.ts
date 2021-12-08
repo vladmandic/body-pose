@@ -1,10 +1,8 @@
 import * as mesh from './mesh';
 import type { Result } from './types';
 import { skeletons } from './constants';
+import { samples } from './samples';
 
-const samples = [
-  '',
-];
 let json: Result = null;
 
 const dom = { // pointers to dom objects
