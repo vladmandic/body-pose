@@ -7,6 +7,9 @@ models/large360/*
 client/*.map
 *.zip
 *.tgz
-media/*.mp4
+
 media/*.webm
 media/Soccer*
+media/BasketballDunkSlowMo.mp4
+media/DanceModern.mp4
+media/DanceContemporary.mp4
