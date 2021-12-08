@@ -13,6 +13,8 @@ const dom = { // pointers to dom objects
   output: document.getElementById('output') as HTMLCanvasElement,
   sample: document.getElementById('input') as HTMLSelectElement,
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
+  inspector: document.getElementById('inspector') as HTMLInputElement,
+  scale: document.getElementById('scale') as HTMLInputElement,
 };
 
 const log = (...msg: unknown[]) => {
@@ -24,7 +26,7 @@ async function render() {
   if (!json) return;
   if (json.options.image) {
     log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
-    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
@@ -33,7 +35,7 @@ async function render() {
     if (frame === 0) log('rendering skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
     dom.status.innerText = `frame: ${frame}`;
     if (frame >= json.frames) frame = json.frames - 1;
-    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked);
     if (dom.video.paused) setTimeout(render, 1000);
     else requestAnimationFrame(render);
   }
@@ -87,6 +89,7 @@ async function processInput(url: string) {
   }
   json = await res.json();
   if (!json) return;
+  json.poses = await mesh.normalize(json.poses, json.resolution, dom.scale.checked); // normalize after we have output canvas resized
   log(`input | ${res.url}`);
   json.options.skeleton = json.options.skeleton === '' ? 'all' : json.options.skeleton.replace('+', '_');
   const options = {

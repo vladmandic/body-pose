@@ -65,9 +65,8 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 
 ## ToDo
 
-- Output smoothening
+- Use animation with interpolate function instead of updating meshes
 - Bone controller: <https://doc.babylonjs.com/divingDeeper/mesh/bonesSkeletons#boneikcontroller>
-- Inspector: <https://doc.babylonjs.com/toolsAndResources/tools/inspector#bones-viewer>
 
 <br>
 

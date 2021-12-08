@@ -33,6 +33,7 @@
     "no-console": "off",
     "no-mixed-operators": "off",
     "no-plusplus": "off",
+    "no-lonely-if": "off",
     "no-loop-func": "off",
     "no-restricted-syntax": "off",
     "no-param-reassign": "off",
