@@ -70,8 +70,9 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 
 ## ToDo
 
+- Create process server to process data on demand
 - Use animation with interpolate function instead of updating meshes
-- Bone controller: <https://doc.babylonjs.com/divingDeeper/mesh/bonesSkeletons#boneikcontroller>
+- Implement avatar animation with bones using inverse kinematics
 
 <br>
 
