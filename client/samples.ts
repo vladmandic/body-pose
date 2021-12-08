@@ -18,5 +18,5 @@ export const samples = [
   'media/RhythmicGymnasticsSlowMo01.webm.json',
   'media/RhythmicGymnasticsSlowMo02.webm.json',
   'media/RhythmicGymnasticsSlowMo03.webm.json',
-  'media/SoccerCompilation.webm.json',
+  // 'media/SoccerCompilation.webm.json',
 ];
