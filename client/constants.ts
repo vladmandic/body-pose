@@ -1,5 +1,9 @@
 import type { Skeleton } from './types';
 
+export const exclude: Array<string> = [
+  'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'nose_sailvos', 'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'htop_h36m', 'htop_muco', 'htop_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'rfoo_muco', 'rhan_muco', 'lwri_sailvos',
+];
+
 export const skeletons: Record<string, Skeleton> = {
   all: { // All the joints that the model was trained on.
     joints: ['lhip', 'rhip', 'bell', 'lkne', 'rkne', 'spin', 'lank', 'rank', 'thor', 'ltoe', 'rtoe', 'neck', 'lcla', 'rcla', 'head', 'lsho', 'rsho', 'lelb', 'relb', 'lwri', 'rwri', 'lhan', 'rhan', 'pelv', 'head_h36m', 'head_muco',

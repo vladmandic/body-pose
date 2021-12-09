@@ -13,10 +13,7 @@ const dom = { // pointers to dom objects
   output: document.getElementById('output') as HTMLCanvasElement,
   sample: document.getElementById('input') as HTMLSelectElement,
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
-  inspector: document.getElementById('inspector') as HTMLInputElement,
-  scale: document.getElementById('scale') as HTMLInputElement,
-  camera: document.getElementById('camera') as HTMLInputElement,
-  animate: document.getElementById('animate') as HTMLInputElement,
+  split: document.getElementById('split') as HTMLInputElement,
 };
 
 const log = (...msg: unknown[]) => {
@@ -31,7 +28,7 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
   if (!json) return;
   if (json.options.image) {
     log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
-    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked, dom.camera.checked, dom.animate.checked);
+    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
@@ -40,7 +37,7 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
     if (frame === 0) log('rendering skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
     dom.status.innerText = `frame: ${frame}`;
     if (frame >= json.frames) frame = json.frames - 1;
-    if (frame !== lastFrame) await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked, dom.camera.checked, dom.animate.checked); // draw only if target frame is different
+    if (frame !== lastFrame) await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value); // draw only if target frame is different
     lastFrame = frame;
     // console.log({ _timestamp, _metadata });
     // @ts-ignore // trigger once on each new frame
@@ -59,12 +56,14 @@ async function loadVideo(url: string) {
   });
   dom.image.style.display = 'none';
   dom.video.style.display = 'flex';
+  dom.split.style.display = 'block';
+  dom.output.style.display = 'flex';
   dom.video.controls = true;
   dom.video.width = dom.video.videoWidth;
   dom.video.height = dom.video.videoHeight;
   dom.output.width = dom.video.width;
   dom.output.height = dom.video.height;
-  dom.output.style.height = 'auto';
+  // dom.output.style.height = 'auto';
   dom.status.innerText = '';
   log(`video | ${url} | resolution: ${dom.video.videoWidth} x ${dom.video.videoHeight} | duration: ${Math.trunc(dom.video.duration)}`);
 }
@@ -78,11 +77,13 @@ async function loadImage(url: string) {
   });
   dom.video.style.display = 'none';
   dom.image.style.display = 'flex';
+  dom.split.style.display = 'block';
+  dom.output.style.display = 'flex';
   dom.image.width = dom.image.naturalWidth;
   dom.image.height = dom.image.naturalHeight;
-  dom.output.width = dom.video.width;
-  dom.output.height = dom.video.height;
-  dom.output.style.height = 'auto';
+  dom.output.width = dom.image.width;
+  dom.output.height = dom.image.height;
+  // dom.output.style.height = 'auto';
   let poses = '';
   if (json) for (const box of json.boxes[0]) poses += Math.round(1000 * box[4]) / 10 + '% ';
   log(`image | ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
@@ -98,7 +99,7 @@ async function processInput(url: string) {
   }
   json = await res.json();
   if (!json) return;
-  json.poses = await mesh.normalize(json.poses, json.resolution, dom.scale.checked); // normalize after we have output canvas resized
+  json.poses = await mesh.normalize(json.poses, json.resolution[0]); // normalize after we have output canvas resized
   log(`input | ${res.url}`);
   json.options.skeleton = json.options.skeleton === '' ? 'all' : json.options.skeleton.replace('+', '_');
   const options = {
@@ -137,6 +138,13 @@ async function enumerateInputs() {
   dom.sample.onchange = (ev: Event) => { // event when sample is selected
     const opt = (ev.target as HTMLSelectElement).options as HTMLOptionsCollection;
     if (opt[opt.selectedIndex].value && opt[opt.selectedIndex].value.length > 0) processInput(opt[opt.selectedIndex].value);
+  };
+  dom.status.onclick = mesh.inspect;
+  dom.split.onchange = () => {
+    const val = parseInt(dom.split.value);
+    dom.video.style.width = `${100 - val}%`;
+    dom.image.style.width = `${100 - val}%`;
+    dom.output.style.width = `${val}%`;
   };
 }
 

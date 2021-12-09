@@ -8,7 +8,6 @@ export interface Global extends Window {
   meshes: BABYLON.AbstractMesh[],
 }
 declare let window: Global;
-
 export class Scene {
   engine!: BABYLON.Engine;
   canvas!: HTMLCanvasElement;
@@ -24,8 +23,7 @@ export class Scene {
   ground: BABYLON.Mesh | undefined;
   skeleton?: BABYLON.Skeleton | undefined;
 
-  constructor(outputCanvas: HTMLCanvasElement, inspector: boolean) {
-    console.log('creating scene:', outputCanvas.id);
+  constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number) {
     this.canvas = outputCanvas;
     // engine & scene
     this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
@@ -41,24 +39,19 @@ export class Scene {
     this.materialHead.diffuseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
     this.materialHead.specularColor = new BABYLON.Color3(1.0, 1.0, 1.0);
     this.materialHead.specularPower = 0;
-    // set default environment
-    this.defaults();
     // start scene
     this.engine.runRenderLoop(() => this.scene.render());
     window.engine = this.engine;
     window.scene = this.scene;
-    if (inspector) this.scene.debugLayer.show({ embedMode: true });
-  }
-
-  defaults() {
     // camera
     if (this.camera) this.camera.dispose();
-    this.camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 0.1, new BABYLON.Vector3(0.5, 0.5, 0.5), this.scene);
+    this.camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, cameraRadius, new BABYLON.Vector3(0.5, 0.5, 0.5), this.scene);
     this.camera.attachControl(this.canvas, true);
     this.camera.lowerRadiusLimit = 0.005;
     this.camera.upperRadiusLimit = 50;
     this.camera.wheelDeltaPercentage = 0.01;
-    this.camera.fov = 0.1;
+    this.camera.position = new BABYLON.Vector3(0, 2.0, -12);
+    this.camera.target = new BABYLON.Vector3(0, 0.5, -1); // slightly elevated initial view
     // environment
     if (this.environment) this.environment.dispose();
     this.environment = this.scene.createDefaultEnvironment({
@@ -90,12 +83,22 @@ export class Scene {
     this.shadows = new BABYLON.ShadowGenerator(1024, this.light);
     this.shadows.useBlurExponentialShadowMap = true;
     this.shadows.blurKernel = 8;
-    this.camera.position = new BABYLON.Vector3(0.0, 2.0, -12);
-    this.camera.target = new BABYLON.Vector3(0.5, 0.7, -1);
     this.light.position = new BABYLON.Vector3(0.0, 2.0, 5.0);
     this.light.direction = new BABYLON.Vector3(-0.5, 1, -2);
     window.light = this.light;
     window.meshes = this.scene.meshes;
     window.camera = this.camera;
+    this.animate();
+  }
+
+  animate() {
+    BABYLON.Animation.CreateAndStartAnimation('camera', this.camera, 'fov', /* FPS */ 60, /* frames */ 120, /* start */ 1.0, /* end */ 0.1, /* loop */ 0, new BABYLON.BackEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', /* FPS */ 20, /* frames */ 80, /* start */ 0.5, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', /* FPS */ 25, /* frames */ 100, /* start */ 2, /* end */ 1, /* loop */ 0, new BABYLON.CircleEase());
+  }
+
+  inspector() {
+    if (this.scene.debugLayer.isVisible()) this.scene.debugLayer.hide();
+    else this.scene.debugLayer.show({ embedMode: false, overlay: true, showExplorer: true, showInspector: true });
   }
 }

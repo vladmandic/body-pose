@@ -19,11 +19,14 @@
     </style>
   </head>
   <body>
-    <pre id="status" style="position: absolute; top: 12px; right: 20px; background-color: grey; padding: 8px; box-shadow: 2px 2px black"></pre>
+    <pre id="status" style="position: absolute; top: 12px; right: 20px; background-color: grey; padding: 8px; box-shadow: 2px 2px black; cursor: crosshair"></pre>
     <div id="media" style="display: flex; margin-bottom: 32px">
-      <video id="input-video" alt="video-input" style="width: 50%; height: auto; display: none" autoplay loop muted controlslist="nofullscreen nodownload noremoteplayback" disablepictureinpicture></video>
-      <img id="input-image" alt="video-input" style="width: 50%; height: auto; display: none">
-      <canvas id="output" style="width: 50%; height: 0"></canvas>
+      <video id="input-video" alt="video-input" style="width: 50%; height: fit-content; display: none" autoplay loop muted controlslist="nofullscreen nodownload noremoteplayback" disablepictureinpicture></video>
+      <img id="input-image" alt="video-input" style="width: 50%; height: fit-content; display: none">
+      <canvas id="output" style="width: 50%; height: fit-content; display: none"></canvas>
+    </div>
+    <div>
+      <input type="range" id="split" name="split" min="0" max="100" value="50" step="1" style="width: 100vw; display: none">
     </div>
     <h1 style="position: absolute; bottom: 0; right: 32px">Advanced 3D Body Pose Analysis</h1>
     <div id="selections" style="margin: 8px; line-height: 32px">    
@@ -39,14 +42,6 @@
       <span>skeleton type
         <select id="skeleton" name="skeleton" title="skeleton" style="margin-left: 26px" class="input"></select>
       </span>
-      <label style="margin-left: 24px" for="lock">show inspector</label>
-      <input type="checkbox" id="inspector" style="vertical-align: middle; width: 18px; height: 18px" name="inspector" value="inspector">  
-      <label style="margin-left: 24px" for="scale">scale coordinates</label>
-      <input type="checkbox" id="scale" style="vertical-align: middle; width: 18px; height: 18px" name="scale" value="scale">  
-      <label style="margin-left: 24px" for="camera">camera follow</label>
-      <input type="checkbox" id="camera" style="vertical-align: middle; width: 18px; height: 18px" name="camera" value="camera" checked>  
-      <label style="margin-left: 24px" for="animate">force animations</label>
-      <input type="checkbox" id="animate" style="vertical-align: middle; width: 18px; height: 18px" name="animate" value="animate" disabled>  
     </div>
     <pre id="log" style="padding: 8px; overflow: hidden; height: 10rem"></pre>
   </body>
