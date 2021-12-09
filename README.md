@@ -1,11 +1,16 @@
 # Advanced 3D Body Pose Analysis
 
+[**Live Demo**](https://vladmandic.github.io/human-pose/client/index.html)  
+Using pre-rendered data from sample images and videos  
+
+<br>
+
 ![**Screenshot-Face**](assets/screenshot-basketball.jpg)
 ![**Screenshot-Body**](assets/screenshot-dance.jpg)
 
 <br>
 
-### Requirements
+## Requirements
 
 TensorFlow with CUDA for GPU acceleration  
 Note that models used here are S.O.T.A. and computationally intensive thus requiring GPU with sufficient memory:
