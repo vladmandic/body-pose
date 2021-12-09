@@ -71,7 +71,8 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 ## ToDo
 
 - Create process server to process data on demand
-- Use animation with interpolate function instead of updating meshes
+- Use animation instead of updating meshes
+- Dynamic tube radius and sphere diameter
 - Implement avatar animation with bones using inverse kinematics
 
 <br>

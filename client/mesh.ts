@@ -8,10 +8,12 @@ let t: Scene;
 let meshes: Record<string, BABYLON.Mesh> = {};
 let persons: Array<BABYLON.AbstractMesh> = [];
 
-async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: Array<Joint>, canvas: HTMLCanvasElement, skeleton: string) {
-  console.log({ poses });
+const avg = (num: number[]) => num.reduce((prev, curr) => prev + curr, 0) / num.length;
+
+async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: Array<Joint>, canvas: HTMLCanvasElement, skeleton: string, dynamicCamera: boolean, animationFrames: number) {
   if (!poses[frame]) return;
   if (persons.length > 1) for (const person of persons) person.setEnabled(false); // disable all poses to start with unless we're tracking just one
+  const centers: { x: number[], y: number[], z: number[] } = { x: [], y: [], z: [] };
   for (let person = 0; person < poses[frame].length; person++) {
     if (!persons[person]) {
       persons[person] = new BABYLON.AbstractMesh(`pose${person}`, t.scene); // create person if it doesnt exist
@@ -38,20 +40,26 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
         if (!meshes[part] || meshes[part].isDisposed()) { // body part seen for the first time
           const diameter = 1.5 * (Math.abs(pt1.x - pt0.x) + Math.abs(pt1.y - pt0.y) + Math.abs(pt1.z - pt0.z));
           meshes[part] = BABYLON.MeshBuilder.CreateSphere(part, { diameter }, t.scene);
-          meshes[part].position = pt0;
           if (poses[frame].length > 1) { // draw person number if more than one person
             const headTexture = new BABYLON.DynamicTexture(`headTexture${person}`, { width: diameter * canvas.width, height: diameter * canvas.height }, t.scene, false);
-            headTexture.vAng = (160 / 180) * Math.PI;
+            headTexture.vAng = (160 / 180) * Math.PI; // rotate text to front
             headTexture.drawText(`${person}`, null, null, '16px Segoe UI', '#000000', '#80FFFF', false);
             meshes[part].material = t.materialHead.clone(`materialHead${person}`);
             (meshes[part].material as BABYLON.StandardMaterial).diffuseTexture = headTexture;
+            t.shadows.addShadowCaster(meshes[part], false); // add shadow to new tube
           } else {
             meshes[part].material = t.materialHead;
           }
           meshes[part].parent = persons[person];
-          t.shadows.addShadowCaster(meshes[part], false);
+          meshes[part].position = pt0; // update head position
         } else { // just update existing head position
-          meshes[part].position = pt0;
+          if (animationFrames === 0 || frame === 0) {
+            meshes[part].position = pt0;
+          } else { // currently this does not get triggered
+            BABYLON.Animation.CreateAndStartAnimation(part, meshes[part], 'position.x', /* FPS */ 80, /* frames */ 3, meshes[part].position.x, pt0.x, 0);
+            BABYLON.Animation.CreateAndStartAnimation(part, meshes[part], 'position.y', /* FPS */ 80, /* frames */ 3, meshes[part].position.y, pt0.y, 0);
+            BABYLON.Animation.CreateAndStartAnimation(part, meshes[part], 'position.z', /* FPS */ 80, /* frames */ 3, meshes[part].position.z, pt0.z, 0);
+          }
         }
       } else { // create tube for all other objects
         const part = `${joints[i]}${person}`;
@@ -66,8 +74,14 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
           meshes[part] = BABYLON.MeshBuilder.CreateTube(part, { path, radius, updatable: true, cap: 3, sideOrientation: BABYLON.Mesh.DOUBLESIDE, instance: meshes[part] }, t.scene); // update existing tube
         }
       }
+      if (joints[i] === 'neck') {
+        centers.x.push(pt0.x);
+        centers.y.push(pt0.y);
+        centers.z.push(pt0.z);
+      }
     }
   }
+  if (dynamicCamera) t.camera.target = new BABYLON.Vector3(avg(centers.x), avg(centers.y), Math.min(...centers.z));
 }
 
 export async function normalize(poses: Pose[][], [width, height]: [number, number], scale: boolean): Promise<Pose[][]> { // frame x body x pose
@@ -100,13 +114,16 @@ export async function normalize(poses: Pose[][], [width, height]: [number, numbe
       }
     }
   }
+  console.log('scene box', { min, max });
   return poses;
 }
 
-export async function draw(json: Result, frame: null | number, canvas: HTMLCanvasElement, skeleton: string, inspector: boolean) {
-  if (!t || t.scene.isDisposed) t = new Scene(canvas, inspector);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function draw(json: Result, frame: null | number, canvas: HTMLCanvasElement, skeleton: string, showInspector: boolean, dynamicCamera: boolean, animate: boolean) {
+  if (!t || t.scene.isDisposed) t = new Scene(canvas, showInspector);
   if (!json || frame === null) return;
-  body(frame, json.poses, json.edges, json.joints, canvas, skeleton);
+  const animationFrames = animate ? 0 : 0; // should be dynamic based on frame rate, currently disabled
+  body(frame, json.poses, json.edges, json.joints, canvas, skeleton, dynamicCamera, animationFrames);
 }
 
 export async function dispose() {

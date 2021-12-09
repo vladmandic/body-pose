@@ -15,18 +15,23 @@ const dom = { // pointers to dom objects
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
   inspector: document.getElementById('inspector') as HTMLInputElement,
   scale: document.getElementById('scale') as HTMLInputElement,
+  camera: document.getElementById('camera') as HTMLInputElement,
+  animate: document.getElementById('animate') as HTMLInputElement,
 };
 
 const log = (...msg: unknown[]) => {
   dom.log.innerText += msg.join(' ') + '\n';
+  dom.log.scrollTop = dom.log.scrollHeight;
   console.log(...msg);
 };
 
-async function render() {
+let lastFrame = 0;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
   if (!json) return;
   if (json.options.image) {
     log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
-    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked);
+    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked, dom.camera.checked, dom.animate.checked);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
@@ -35,9 +40,13 @@ async function render() {
     if (frame === 0) log('rendering skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
     dom.status.innerText = `frame: ${frame}`;
     if (frame >= json.frames) frame = json.frames - 1;
-    await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked);
-    if (dom.video.paused) setTimeout(render, 1000);
-    else requestAnimationFrame(render);
+    if (frame !== lastFrame) await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value, dom.inspector.checked, dom.camera.checked, dom.animate.checked); // draw only if target frame is different
+    lastFrame = frame;
+    // console.log({ _timestamp, _metadata });
+    // @ts-ignore // trigger once on each new frame
+    dom.video.requestVideoFrameCallback(render);
+    // if (dom.video.paused) setTimeout(render, 1000);
+    // else requestAnimationFrame(render);
   }
 }
 
@@ -84,7 +93,7 @@ async function processInput(url: string) {
   const res = await fetch(url);
   if (!res.ok) {
     log(`error loading: ${res.url} code: ${res.status} ${res.statusText !== '' ? 'error:' + res.statusText : ''}`);
-    console.log(res);
+    console.error(res);
     return;
   }
   json = await res.json();
@@ -108,14 +117,14 @@ async function processInput(url: string) {
     model: json.options.model,
   };
   log(`model | ${JSON.stringify(options).replace(/"|{|}/g, '').replace(/,/g, ' | ')}`);
-  console.log({ json });
+  console.log('json:', { json });
   for (let i = 0; i < dom.skeleton.options.length; i++) {
     if (json.options.skeleton !== 'all' && dom.skeleton.options.item(i)?.outerText === json.options.skeleton) dom.skeleton.selectedIndex = i;
   }
+  await mesh.dispose();
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
-  await mesh.dispose();
-  render();
+  render(0);
 }
 
 async function enumerateInputs() {
@@ -141,7 +150,7 @@ async function enumerateOutputs() {
   dom.skeleton.onchange = async () => { // event when sample is selected
     if (dom.sample.options.selectedIndex > 0) {
       await mesh.dispose();
-      render();
+      render(0);
     }
   };
 }
