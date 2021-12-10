@@ -1,5 +1,4 @@
 import * as BABYLON from 'babylonjs';
-// import { Scene, Engine, ArcRotateCamera, DirectionalLight, AbstractMesh, StandardMaterial, HemisphericLight, ShadowGenerator, EnvironmentHelper, Mesh } from 'babylonjs';
 
 export interface Global extends Window {
   engine: BABYLON.Engine,
@@ -22,6 +21,7 @@ export class PoseScene {
   environment!: BABYLON.EnvironmentHelper;
   skybox: BABYLON.Mesh | undefined;
   ground: BABYLON.Mesh | undefined;
+  skeleton?: BABYLON.Skeleton | undefined;
 
   constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number) {
     this.canvas = outputCanvas;

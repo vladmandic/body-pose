@@ -25,10 +25,10 @@ function head(person: number, pt0: BABYLON.Vector3, diameter: number, drawNumber
       headTexture.drawText(`${person}`, null, null, '32px Segoe UI', '#000000', '#80FFFF', false);
       meshes[part].material = t.materialHead.clone(`materialHead${person}`);
       (meshes[part].material as BABYLON.StandardMaterial).diffuseTexture = headTexture;
-      t.shadows.addShadowCaster(meshes[part], false); // add shadow to new tube
     } else {
       meshes[part].material = t.materialHead;
     }
+    t.shadows.addShadowCaster(meshes[part], false); // add shadow
     meshes[part].parent = parents[person + 'center'];
   }
   meshes[part].position = pt0; // update head position
