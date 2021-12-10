@@ -55,7 +55,7 @@ def loadModel():
   print('model loaded:', args.model, 'in {:.1f}sec'.format(now() - t0))
 
 
-def predict(tensor, timestamp):
+def predict(tensor, timestamp, frame, count):
   if model is None:
     print('model not loaded')
     return None, None, None, None, None
@@ -89,7 +89,7 @@ def predict(tensor, timestamp):
   res.joints = joints.tolist()
   res.edges = edges.tolist()
   if bool(args.verbose):
-    print('process time: {:.3f}sec'.format(now() - t0))
+    print('process', 'frame: {:.0f}'.format(frame), 'of {:.0f}'.format(count), 'timestamp: {:.0f}'.format(timestamp), 'time: {:.3f}sec'.format(now() - t0))
   return boxes, points3d, points2d, joints, edges
 
 
@@ -98,7 +98,7 @@ def predictImage(input):
   res.frames = 1
   print('image loaded:', input, 'resolution: {:.0f}'.format(tensor.shape[1]), 'x {:.0f}'.format(tensor.shape[0]))
   t0 = now()
-  boxes, poses3d, poses2d, joints, edges = predict(tensor, 0)
+  boxes, poses3d, poses2d, joints, edges = predict(tensor, 0, 1, 1)
   image = tensor.numpy()
   print('image processed in {:.1f}sec'.format(now() - t0))
   for box in boxes:
@@ -121,9 +121,7 @@ def predictVideo(input):
     if image is not None:
       tensor = tf.convert_to_tensor(image, dtype=tf.uint8)
       ts = vidcap.get(cv2.CAP_PROP_POS_MSEC)
-      if bool(args.verbose):
-        print('process frame: {:.0f}'.format(count), 'timestamp: {:.0f}'.format(ts))
-      detections, poses3d, poses2d, joints, edges = predict(tensor, ts)
+      detections, poses3d, poses2d, joints, edges = predict(tensor, ts, count, res.frames)
     count = count + 1
   print('video processed:', '{:.0f} frames'.format(count), 'in {:.1f}sec'.format(now() - t0))
 
