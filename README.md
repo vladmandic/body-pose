@@ -1,12 +1,19 @@
 # Advanced 3D Body Pose Analysis
 
 [**Live Demo**](https://vladmandic.github.io/human-pose/client/index.html)  
-Using pre-rendered data from sample images and videos  
+*Note: Live demo uses pre-rendered data from sample images and videos*  
 
 <br>
 
-![**Screenshot-Face**](assets/screenshot-basketball.jpg)
-![**Screenshot-Body**](assets/screenshot-dance.jpg)
+This solution is in two parts
+- Processing using **Python** and **TensorFlow** framework
+- 3D Visualization using **JavaScript** and **BabylonJS**
+
+<br>
+
+![**Screenshot-Fitness**](assets/screenshot-fitness.jpg)
+![**Screenshot-Basketball**](assets/screenshot-basketball.jpg)
+![**Screenshot-Dance**](assets/screenshot-dance.jpg)
 
 <br>
 
@@ -51,20 +58,16 @@ Note that models used here are S.O.T.A. and computationally intensive thus requi
 
 *Using default model and processing parameters*
 
-> ./run.py --video media/baseball-pitch.mp4 --json baseball-pitch.json
+> ./process.py --model models/tiny --video media/BaseballPitchSlowMo.webm --maxpeople 1 --augmentations 1 --json output.json
 
-    options: {'image': None, 'video': 'media/baseball-pitch.mp4', 'json': 'baseball-pitch.json', 'verbose': 1, 'model': 'models/metrabs_mob3l_y4t', 'skipms': 2000, 'plot': 0, 'fov': 55, 'batch': 64, 'maxpeople': -1, 'skeleton': '', 'augmentations': 5, 'average': 1, 'suppress': 1, 'minconfidence': 0.3, 'iou': 0.7}
-    tensorflow 2.7.0
-    cuda 11.2
-    cpu devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU')]
-    gpu devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
-    model loaded: models/metrabs_mob3l_y4t in 27sec
-    video loaded: media/baseball-pitch.mp4 frames: 720 resolution: 1080 x 1080
-    process frame: 0 timestamp: 0
-    process time: 0.192sec
-    ...
-    video processed: 14 frames in 4.8sec
-    results written to: baseball-pitch.json
+    options: image:null video:media/BaseballPitchSlowMo.webm json:output.json verbose:1 model:models/tiny skipms:0 plot:0 fov:55 batch:64 maxpeople:1 skeleton: augmentations:1 average:1 suppress:1 round:1 minify:1 minconfidence:0.1 iou:0.7
+
+    loaded tensorflow 2.7.0
+    loaded cuda 11.2
+    loaded model: models/tiny in 27.8sec
+    loaded video: media/BaseballPitchSlowMo.webm  frames: 720  resolution: 1080 x 1080
+    processed video: 720 frames in 67.8sec
+    results written to: output.json
 
 <br>
 

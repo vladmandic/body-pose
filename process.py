@@ -40,22 +40,17 @@ def loadModel():
   global model
   # os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable cuda
   os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # reduce tf logging
-  if bool(args.verbose):
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' # reduce tf logging
-    print('tensorflow', tf.version.VERSION)
+  print('loaded tensorflow', tf.version.VERSION)
   if len(tf.config.list_physical_devices('GPU')) < 1:
     print('no gpu devices found')
     exit(0)    
-  if bool(args.verbose):
-    print('cuda', build.build_info['cuda_version'])
-    print('cpu devices:', tf.config.list_physical_devices('CPU'))
-    print('gpu devices:', tf.config.list_physical_devices('GPU'))
+  print('loaded cuda', build.build_info['cuda_version'])
   t0 = now()
   model = tf.saved_model.load(args.model)
-  print('model loaded:', args.model, 'in {:.1f}sec'.format(now() - t0))
+  print('loaded model:', args.model, 'in {:.1f}sec'.format(now() - t0))
 
 
-def predict(tensor, timestamp, frame, count):
+def predict(tensor, timestamp, frame, count, starttime):
   if model is None:
     print('model not loaded')
     return None, None, None, None, None
@@ -88,21 +83,29 @@ def predict(tensor, timestamp, frame, count):
   edges = model.per_skeleton_joint_edges[args.skeleton].numpy()
   res.joints = joints.tolist()
   res.edges = edges.tolist()
-  if bool(args.verbose):
-    print('process', 'frame: {:.0f}'.format(frame), 'of {:.0f}'.format(count), 'timestamp: {:.0f}'.format(timestamp), 'time: {:.3f}sec'.format(now() - t0))
+  print(
+    '\rprocess:',
+    ' frame: {:.0f}'.format(frame), 'of {:.0f}'.format(count),
+    ' timestamp: {:.0f}'.format(timestamp),
+    ' time: {:.3f}sec'.format(now() - t0),
+    ' progress: {:.0f}%'.format(100 * frame / count),
+    ' estimate: {:.0f}sec'.format((count - 1) / frame * (now() - starttime)),
+    end='') # overwrite same line
   return boxes, points3d, points2d, joints, edges
 
 
 def predictImage(input):
   tensor = tf.image.decode_jpeg(tf.io.read_file(input))
   res.frames = 1
-  print('image loaded:', input, 'resolution: {:.0f}'.format(tensor.shape[1]), 'x {:.0f}'.format(tensor.shape[0]))
+  print('loaded image:', input, ' resolution: {:.0f}'.format(tensor.shape[1]), 'x {:.0f}'.format(tensor.shape[0]))
   t0 = now()
-  boxes, poses3d, poses2d, joints, edges = predict(tensor, 0, 1, 1)
+  boxes, poses3d, poses2d, joints, edges = predict(tensor, 0, 1, 1, t0)
   image = tensor.numpy()
-  print('image processed in {:.1f}sec'.format(now() - t0))
+  print('\nprocessed image in {:.1f}sec'.format(now() - t0))
+  confidences = ''
   for box in boxes:
-    print('detected confidence: {:.2f}'.format(box[-1]))
+    confidences = confidences + '{:.0f}% '.format(100 * box[-1])
+  print('detected poses: {:.0f}'.format(len(boxes)), ' confidences:', confidences)
   if bool(args.plot):
     visualize(image, boxes, poses3d, poses2d, joints, edges)
 
@@ -111,19 +114,19 @@ def predictVideo(input):
   count = 0
   vidcap = cv2.VideoCapture(input)
   res.frames = vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
-  print('video loaded:', input, 'frames: {:.0f}'.format(res.frames), 'resolution: {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), 'x {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+  print('loaded video:', input, ' frames: {:.0f}'.format(res.frames), ' resolution: {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), 'x {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
   success, image = vidcap.read()
   t0 = now()
   while success:
     if args.skipms > 0:
       vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * args.skipms))
     success, image = vidcap.read()
+    count = count + 1
     if image is not None:
       tensor = tf.convert_to_tensor(image, dtype=tf.uint8)
       ts = vidcap.get(cv2.CAP_PROP_POS_MSEC)
-      detections, poses3d, poses2d, joints, edges = predict(tensor, ts, count, res.frames)
-    count = count + 1
-  print('video processed:', '{:.0f} frames'.format(count), 'in {:.1f}sec'.format(now() - t0))
+      detections, poses3d, poses2d, joints, edges = predict(tensor, ts, count, res.frames, t0)
+  print('\nprocessed video:', '{:.0f} frames'.format(count), 'in {:.1f}sec'.format(now() - t0))
 
 
 def visualize(image, detections, poses3d, poses2d, joint_names, joint_edges):
@@ -174,7 +177,9 @@ if __name__ == '__main__':
   a.add_argument('--minconfidence', type=float,     default=0.1,            help='minimum detection confidence')
   a.add_argument('--iou',           type=float,     default=0.7,            help='iou threshold for overlaps') # 0 is any overlap and 1 is ignore overlap, 
   args = a.parse_args()
-  print('options:', args.__dict__)
+  options = json.dumps(args.__dict__)
+  options = options.replace("\"", "").replace("{", "").replace("}", "").replace(": ", ":").replace(",", "")
+  print('options:', options)
   res.options = vars(args)
   if args.image is not None:
     loadModel()
@@ -198,3 +203,4 @@ if __name__ == '__main__':
     with open(output, "w") as outfile:
       outfile.write(obj)
       print('results written to:', output)
+  print("done...")
