@@ -54,7 +54,10 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
 async function loadVideo(url: string) {
   dom.status.innerText = 'loading video...';
   await new Promise((resolve, reject) => {
-    dom.video.onerror = (err) => reject(err);
+    dom.video.onerror = (err) => {
+      log(`error loading video specified in json data: ${url}`);
+      reject(err);
+    };
     dom.video.onloadeddata = () => resolve(true);
     dom.video.src = url;
   });
@@ -75,7 +78,10 @@ async function loadImage(url: string) {
   dom.status.innerText = 'loading image...';
   await new Promise((resolve, reject) => {
     dom.image.onload = () => resolve(true);
-    dom.image.onerror = (err) => reject(err);
+    dom.image.onerror = (err) => {
+      log(`error loading image specified in json data: ${url}`);
+      reject(err);
+    };
     dom.image.src = url;
   });
   dom.video.style.display = 'none';
