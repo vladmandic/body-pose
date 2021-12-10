@@ -1,6 +1,7 @@
 export const samples = [
   '',
   // images
+  '../media/Fitness.jpg.json',
   '../media/DancePose.jpg.json',
   '../media/YogaGroupPose.jpg.json',
   '../media/FootballCatch.jpg.json',
@@ -11,6 +12,7 @@ export const samples = [
   '../media/BasketballDunk.jpg.json',
   // videos
   '../media/BaseballPitchSlowMo.webm.json',
+  '../media/TennisSlowMo.webm.json',
   '../media/BasketballDunkSlowMo.webm.json',
   '../media/DanceContemporary.webm.json',
   '../media/DanceModern.webm.json',

@@ -1,7 +1,9 @@
 import type { Skeleton } from './types';
 
 export const exclude: Array<string> = [
-  'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'nose_sailvos', 'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'htop_h36m', 'htop_muco', 'htop_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'rfoo_muco', 'rhan_muco', 'lwri_sailvos',
+  'nose_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'htop_h36m', 'htop_muco', 'htop_sailvos',
+  'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'lhip_sailvos', 'lwri_sailvos', 'lsho_cmu_panoptic', 'lfoo_muco', 'lhan_muco', 'lwri_muco',
+  'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'rhip_sailvos', 'rwri_sailvos', 'rsho_cmu_panoptic', 'rfoo_muco', 'rhan_muco', 'rwri_muco',
 ];
 
 export const skeletons: Record<string, Skeleton> = {
@@ -20,6 +22,15 @@ export const skeletons: Record<string, Skeleton> = {
       [69, 105], [69, 118], [70, 82], [70, 117], [71, 107], [71, 120], [72, 89], [73, 90], [74, 96], [75, 97], [75, 118], [76, 98], [76, 119], [77, 99], [77, 120], [78, 100], [79, 92], [79, 101], [80, 93], [80, 102], [81, 103], [81, 111],
       [82, 106], [83, 89], [84, 90], [85, 104], [85, 112], [86, 105], [86, 113], [87, 106], [87, 114], [88, 107], [88, 115], [91, 113], [92, 109], [93, 110], [94, 114], [95, 115], [96, 100], [97, 101], [98, 102], [99, 103], [108, 113],
       [116, 119], [116, 121], [117, 121]],
+    suffix: '',
+  },
+  smpl_head_30: { // SMPL joints plus face keypoints from COCO and the head top from MPI-INF-3DHP // smpl+head_30
+    // joints: ['pelv_smpl', 'lhip_smpl', 'rhip_smpl', 'bell_smpl', 'lkne_smpl', 'rkne_smpl', 'spin_smpl', 'lank_smpl', 'rank_smpl', 'thor_smpl', 'ltoe_smpl', 'rtoe_smpl', 'neck_smpl', 'lcla_smpl', 'rcla_smpl',
+    //   'head_smpl', 'lsho_smpl', 'rsho_smpl', 'lelb_smpl', 'relb_smpl', 'lwri_smpl', 'rwri_smpl', 'lhan_smpl', 'rhan_smpl', 'htop_mpi_inf_3dhp', 'learcoco', 'leyecoco', 'nosecoco', 'rearcoco', 'reyecoco'],
+    joints: ['pelv', 'lhip', 'rhip', 'bell', 'lkne', 'rkne', 'spin', 'lank', 'rank', 'thor', 'ltoe', 'rtoe', 'neck', 'lcla', 'rcla', 'head', 'lsho', 'rsho', 'lelb', 'relb', 'lwri', 'rwri', 'lhan', 'rhan',
+      /* mpi_inf_3dhp */ 'htop', /* coco */ 'lear', 'leye', 'nose', 'rear', 'reye'],
+    edges: [[1, 4], [1, 0], [2, 5], [2, 0], [3, 6], [3, 0], [4, 7], [5, 8], [6, 9], [7, 10], [8, 11], [9, 12], [12, 13], [12, 14], [12, 15], [13, 16], [14, 17], [16, 18], [17, 19], [18, 20], [19, 21], [20, 22],
+      [21, 23], [25, 26], [26, 27], [27, 29], [28, 29], [24, 15], [15, 27]],
     suffix: '',
   },
   smpl_24: { // SMPL body model
@@ -51,14 +62,5 @@ export const skeletons: Record<string, Skeleton> = {
     joints: ['thor', 'spi4', 'spi2', 'spin', 'pelv', 'neck', 'head', 'htop', 'lcla', 'lsho', 'lelb', 'lwri', 'lhan', 'rcla', 'rsho', 'relb', 'rwri', 'rhan', 'lhip', 'lkne', 'lank', 'lfoo', 'ltoe', 'rhip', 'rkne', 'rank', 'rfoo', 'rtoe'],
     edges: [[6, 7], [6, 5], [20, 21], [20, 19], [8, 9], [8, 5], [10, 9], [10, 11], [21, 22], [12, 11], [18, 19], [18, 4], [5, 13], [5, 1], [4, 23], [4, 3], [25, 26], [25, 24], [13, 14], [15, 14], [15, 16], [26, 27], [17, 16], [23, 24], [2, 3], [2, 0], [1, 0]],
     suffix: '_muco',
-  },
-  smpl_head_30: { // SMPL joints plus face keypoints from COCO and the head top from MPI-INF-3DHP // smpl+head_30
-    // joints: ['pelv_smpl', 'lhip_smpl', 'rhip_smpl', 'bell_smpl', 'lkne_smpl', 'rkne_smpl', 'spin_smpl', 'lank_smpl', 'rank_smpl', 'thor_smpl', 'ltoe_smpl', 'rtoe_smpl', 'neck_smpl', 'lcla_smpl', 'rcla_smpl',
-    //   'head_smpl', 'lsho_smpl', 'rsho_smpl', 'lelb_smpl', 'relb_smpl', 'lwri_smpl', 'rwri_smpl', 'lhan_smpl', 'rhan_smpl', 'htop_mpi_inf_3dhp', 'learcoco', 'leyecoco', 'nosecoco', 'rearcoco', 'reyecoco'],
-    joints: ['pelv', 'lhip', 'rhip', 'bell', 'lkne', 'rkne', 'spin', 'lank', 'rank', 'thor', 'ltoe', 'rtoe', 'neck', 'lcla', 'rcla', 'head', 'lsho', 'rsho', 'lelb', 'relb', 'lwri', 'rwri', 'lhan', 'rhan',
-      /* mpi_inf_3dhp */ 'htop', /* coco */ 'lear', 'leye', 'nose', 'rear', 'reye'],
-    edges: [[1, 4], [1, 0], [2, 5], [2, 0], [3, 6], [3, 0], [4, 7], [5, 8], [6, 9], [7, 10], [8, 11], [9, 12], [12, 13], [12, 14], [12, 15], [13, 16], [14, 17], [16, 18], [17, 19], [18, 20], [19, 21], [20, 22],
-      [21, 23], [25, 26], [26, 27], [27, 29], [28, 29], [24, 15], [15, 27]],
-    suffix: '',
   },
 };

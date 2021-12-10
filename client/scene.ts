@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs';
+// import { Scene, Engine, ArcRotateCamera, DirectionalLight, AbstractMesh, StandardMaterial, HemisphericLight, ShadowGenerator, EnvironmentHelper, Mesh } from 'babylonjs';
 
 export interface Global extends Window {
   engine: BABYLON.Engine,
@@ -8,7 +9,7 @@ export interface Global extends Window {
   meshes: BABYLON.AbstractMesh[],
 }
 declare let window: Global;
-export class Scene {
+export class PoseScene {
   engine!: BABYLON.Engine;
   canvas!: HTMLCanvasElement;
   scene!: BABYLON.Scene;
@@ -21,7 +22,6 @@ export class Scene {
   environment!: BABYLON.EnvironmentHelper;
   skybox: BABYLON.Mesh | undefined;
   ground: BABYLON.Mesh | undefined;
-  skeleton?: BABYLON.Skeleton | undefined;
 
   constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number) {
     this.canvas = outputCanvas;
@@ -47,11 +47,12 @@ export class Scene {
     if (this.camera) this.camera.dispose();
     this.camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, cameraRadius, new BABYLON.Vector3(0.5, 0.5, 0.5), this.scene);
     this.camera.attachControl(this.canvas, true);
-    this.camera.lowerRadiusLimit = 0.005;
+    this.camera.lowerRadiusLimit = 0.001;
     this.camera.upperRadiusLimit = 50;
     this.camera.wheelDeltaPercentage = 0.01;
     this.camera.position = new BABYLON.Vector3(0, 2.0, -12);
     this.camera.target = new BABYLON.Vector3(0, 0.5, -1); // slightly elevated initial view
+    this.camera.alpha = (2 * Math.PI + this.camera.alpha) % (2 * Math.PI); // normalize so its not in negative range
     // environment
     if (this.environment) this.environment.dispose();
     this.environment = this.scene.createDefaultEnvironment({
@@ -62,7 +63,7 @@ export class Scene {
       skyboxSize: 15,
       cameraContrast: 2,
       cameraExposure: 1,
-      groundColor: new BABYLON.Color3(0.0, 0.3, 0.5),
+      groundColor: new BABYLON.Color3(0.3, 0.3, 0.3), // new BABYLON.Color3(0.0, 0.3, 0.5),
       groundSize: 15,
       groundShadowLevel: 0.4, // shadow darkness
       groundTexture: '../assets/ground.png',
@@ -88,10 +89,10 @@ export class Scene {
     window.light = this.light;
     window.meshes = this.scene.meshes;
     window.camera = this.camera;
-    this.animate();
+    this.intro();
   }
 
-  animate() {
+  intro() {
     BABYLON.Animation.CreateAndStartAnimation('camera', this.camera, 'fov', /* FPS */ 60, /* frames */ 120, /* start */ 1.0, /* end */ 0.1, /* loop */ 0, new BABYLON.BackEase());
     BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', /* FPS */ 20, /* frames */ 80, /* start */ 0.5, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
     BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', /* FPS */ 25, /* frames */ 100, /* start */ 2, /* end */ 1, /* loop */ 0, new BABYLON.CircleEase());

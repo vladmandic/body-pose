@@ -7,5 +7,5 @@ models/large360/*
 client/*.map
 *.zip
 *.tgz
-media/SoccerCompilation.webm
-media/SoccerCompilation.webm.json
+media/SoccerCompilation.*
+media/TennisSlowMo.*

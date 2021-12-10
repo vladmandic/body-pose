@@ -14,6 +14,10 @@ const dom = { // pointers to dom objects
   sample: document.getElementById('input') as HTMLSelectElement,
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
   split: document.getElementById('split') as HTMLInputElement,
+  options: document.getElementById('options') as HTMLDivElement,
+  animate: document.getElementById('animate') as HTMLButtonElement,
+  bone: document.getElementById('bone') as HTMLInputElement,
+  joint: document.getElementById('joint') as HTMLInputElement,
 };
 
 const log = (...msg: unknown[]) => {
@@ -56,7 +60,6 @@ async function loadVideo(url: string) {
   });
   dom.image.style.display = 'none';
   dom.video.style.display = 'flex';
-  dom.split.style.display = 'block';
   dom.output.style.display = 'flex';
   dom.video.controls = true;
   dom.video.width = dom.video.videoWidth;
@@ -77,7 +80,6 @@ async function loadImage(url: string) {
   });
   dom.video.style.display = 'none';
   dom.image.style.display = 'flex';
-  dom.split.style.display = 'block';
   dom.output.style.display = 'flex';
   dom.image.width = dom.image.naturalWidth;
   dom.image.height = dom.image.naturalHeight;
@@ -125,6 +127,8 @@ async function processInput(url: string) {
   await mesh.dispose();
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
+  dom.split.style.display = 'block';
+  dom.options.style.display = 'block';
   render(0);
 }
 
@@ -146,6 +150,12 @@ async function enumerateInputs() {
     dom.image.style.width = `${100 - val}%`;
     dom.output.style.width = `${val}%`;
   };
+  dom.animate.onclick = () => mesh.animate(15);
+}
+
+async function refresh() {
+  await mesh.dispose();
+  render(0);
 }
 
 async function enumerateOutputs() {
@@ -156,10 +166,13 @@ async function enumerateOutputs() {
     dom.skeleton.appendChild(skeleton);
   }
   dom.skeleton.onchange = async () => { // event when sample is selected
-    if (dom.sample.options.selectedIndex > 0) {
-      await mesh.dispose();
-      render(0);
-    }
+    if (dom.sample.options.selectedIndex > 0) await refresh();
+  };
+  dom.bone.onchange = async () => {
+    if (json && json.options.image) await refresh();
+  };
+  dom.joint.onchange = async () => {
+    if (json && json.options.image) await refresh();
   };
 }
 
