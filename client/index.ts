@@ -1,5 +1,7 @@
 import * as mesh from './mesh';
+import * as avatar from './avatar';
 import type { Result } from './types';
+import * as utils from './utils';
 import { skeletons } from './constants';
 import { samples } from './samples';
 
@@ -13,6 +15,7 @@ const dom = { // pointers to dom objects
   output: document.getElementById('output') as HTMLCanvasElement,
   sample: document.getElementById('input') as HTMLSelectElement,
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
+  model: document.getElementById('model') as HTMLSelectElement,
   split: document.getElementById('split') as HTMLInputElement,
   options: document.getElementById('options') as HTMLDivElement,
   animate: document.getElementById('animate') as HTMLButtonElement,
@@ -32,7 +35,8 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
   if (!json) return;
   if (json.options.image) {
     log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
-    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    if (dom.model.options[dom.model.selectedIndex].value === 'avatar') await avatar.draw(json, 0, dom.output);
+    else await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
@@ -107,7 +111,7 @@ async function processInput(url: string) {
   }
   json = await res.json();
   if (!json) return;
-  json.poses = await mesh.normalize(json.poses, json.resolution[0]); // normalize after we have output canvas resized
+  json.poses = await utils.normalize(json.poses, json.resolution[0]); // normalize after we have output canvas resized
   log(`input | ${res.url}`);
   json.options.skeleton = json.options.skeleton === '' ? 'all' : json.options.skeleton.replace('+', '_');
   const options = {
@@ -130,6 +134,7 @@ async function processInput(url: string) {
   for (let i = 0; i < dom.skeleton.options.length; i++) {
     if (json.options.skeleton !== 'all' && dom.skeleton.options.item(i)?.outerText === json.options.skeleton) dom.skeleton.selectedIndex = i;
   }
+  await avatar.dispose();
   await mesh.dispose();
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
@@ -149,18 +154,19 @@ async function enumerateInputs() {
     const opt = (ev.target as HTMLSelectElement).options as HTMLOptionsCollection;
     if (opt[opt.selectedIndex].value && opt[opt.selectedIndex].value.length > 0) processInput(opt[opt.selectedIndex].value);
   };
-  dom.status.onclick = mesh.inspect;
+  dom.status.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.inspect() : avatar.inspect());
   dom.split.onchange = () => {
     const val = parseInt(dom.split.value);
     dom.video.style.width = `${100 - val}%`;
     dom.image.style.width = `${100 - val}%`;
     dom.output.style.width = `${val}%`;
   };
-  dom.animate.onclick = () => mesh.animate(15);
+  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.animate(15) : avatar.animate());
 }
 
 async function refresh() {
   await mesh.dispose();
+  await avatar.dispose();
   render(0);
 }
 

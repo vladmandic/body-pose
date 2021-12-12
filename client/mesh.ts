@@ -1,15 +1,15 @@
 import * as BABYLON from 'babylonjs';
 import 'babylonjs-inspector';
 import { PoseScene } from './scene';
+import * as utils from './utils';
 import { skeletons, exclude } from './constants';
-import type { Result, Joint, Edge, Pose, Point3D } from './types';
+import type { Result, Joint, Edge, Pose } from './types';
 
 let t: PoseScene | null;
 let meshes: Record<string, BABYLON.Mesh> = {};
 let parents: Record<string, BABYLON.AbstractMesh> = {};
 let persons: Array<BABYLON.AbstractMesh> = [];
 let centers: { x: number[], y: number[], z: number[] } = { x: [], y: [], z: [] };
-let fov = 0;
 
 const avg = (num: number[]): number => (num.length > 0 ? num.reduce((prev, curr) => prev + curr, 0) / num.length : 0);
 
@@ -96,7 +96,7 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
       const pt1 = new BABYLON.Vector3(pose[edges[i][1]][0], pose[edges[i][1]][1], pose[edges[i][1]][2]);
       const distance = BABYLON.Vector3.Distance(pt0, pt1); // edge length
       const depth = Math.min(Math.sqrt(Math.abs(1 / (pt0.z + 0.5))), 2); // z-distance of a point
-      if (skeleton === 'all' && exclude.includes(joints[i])) { // skip some joints around head
+      if (exclude[skeleton].includes(joints[i])) { // skip some joints around head
         continue;
       } else if (joints[i].startsWith('head')) { // create single sphere for any possible head object
         const diameter = 1.75 * distance * depth * jointScale / 100;
@@ -113,54 +113,6 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
       }
     }
   }
-}
-
-export async function normalize(poses: Pose[][], scale: number): Promise<Pose[][]> { // frame x body x pose
-  let min: Point3D = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-  let max: Point3D = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
-  for (let j = 0; j < poses[0].length; j++) { // find min/max of all poses/joints based on first frame
-    for (let k = 0; k < poses[0][j].length; k++) {
-      for (let l = 0; l < poses[0][j][k].length; l++) {
-        if (poses[0][j][k][l] < min[l]) min[l] = poses[0][j][k][l];
-        if (poses[0][j][k][l] > max[l]) max[l] = poses[0][j][k][l];
-      }
-    }
-  }
-  const norm = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2]) / scale;
-  for (let i = 0; i < poses.length; i++) { // rescale and invert coordinates // frames
-    for (let j = 0; j < poses[i].length; j++) { // poses
-      for (let k = 0; k < poses[i][j].length; k++) { // joints
-        poses[i][j][k] = [
-          (poses[i][j][k][0]) / scale / norm,
-          (max[1] - poses[i][j][k][1]) / scale / norm,
-          (poses[i][j][k][2] - min[2]) / scale * 1.5 / norm,
-        ];
-      }
-    }
-  }
-  min = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-  max = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
-  for (let j = 0; j < poses[0].length; j++) { // find min/max of all poses/joints based on first frame to calculate fov
-    for (let k = 0; k < poses[0][j].length; k++) {
-      for (let l = 0; l < poses[0][j][k].length; l++) {
-        if (poses[0][0][k][l] < min[l]) min[l] = poses[0][j][k][l];
-        if (poses[0][0][k][l] > max[l]) max[l] = poses[0][j][k][l];
-      }
-    }
-  }
-  fov = 10 * Math.sqrt(((max[0] - min[0]) ** 2) + ((max[1] - min[1]) ** 2));
-  return poses;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function draw(json: Result, frame: null | number, canvas: HTMLCanvasElement, skeleton: string) {
-  if (!json || frame === null) return;
-  if (!t || t.scene.isDisposed) t = new PoseScene(canvas, fov); // create new scene
-  body(frame, json.poses, json.edges, json.joints, skeleton);
-}
-
-export async function inspect() {
-  if (t && t.scene) t.inspector();
 }
 
 export async function animate(sec: number) {
@@ -214,6 +166,10 @@ export async function animate(sec: number) {
   setTimeout(() => moveTarget(target.x, target.y, target.z, durationTarget), durationTarget + Math.max(durationAlpha, durationBeta, durationZoom));
 }
 
+export async function inspect() {
+  if (t && t.scene) t.inspector();
+}
+
 export async function dispose() {
   if (!t || !t.scene || !t.scene.meshes) return;
   t.scene.dispose();
@@ -222,4 +178,13 @@ export async function dispose() {
   meshes = {};
   parents = {};
   persons = [];
+}
+
+export async function draw(json: Result, frame: null | number, canvas: HTMLCanvasElement, skeleton: string) {
+  if (!json || frame === null) return;
+  if (!t || t.scene.isDisposed) {
+    const fov = utils.fov(json.poses);
+    t = new PoseScene(canvas, fov); // create new scene
+  }
+  body(frame, json.poses, json.edges, json.joints, skeleton);
 }

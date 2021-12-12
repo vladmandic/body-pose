@@ -1,10 +1,19 @@
 import type { Skeleton } from './types';
 
-export const exclude: Array<string> = [
-  'nose_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'htop_h36m', 'htop_muco', 'htop_sailvos',
-  'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'lhip_sailvos', 'lwri_sailvos', 'lsho_cmu_panoptic', 'lfoo_muco', 'lhan_muco', 'lwri_muco',
-  'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'rhip_sailvos', 'rwri_sailvos', 'rsho_cmu_panoptic', 'rfoo_muco', 'rhan_muco', 'rwri_muco',
-];
+export const exclude: Record<string, Array<string>> = {
+  all: [
+    'nose_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'htop_h36m', 'htop_muco', 'htop_sailvos',
+    'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'lhip_sailvos', 'lwri_sailvos', 'lsho_cmu_panoptic', 'lfoo_muco', 'lhan_muco', 'lwri_muco',
+    'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'rhip_sailvos', 'rwri_sailvos', 'rsho_cmu_panoptic', 'rfoo_muco', 'rhan_muco', 'rwri_muco',
+  ],
+  smpl_head_30: ['htop_muco', 'htop_h36m', 'pelv'],
+  smpl_24: [],
+  coco_19: [],
+  h36m_17: [],
+  h36m_25: [],
+  mpi_inf_3dhp_17: [],
+  mpi_inf_3dhp_28: [],
+};
 
 export const skeletons: Record<string, Skeleton> = {
   all: { // All the joints that the model was trained on.
@@ -63,4 +72,18 @@ export const skeletons: Record<string, Skeleton> = {
     edges: [[6, 7], [6, 5], [20, 21], [20, 19], [8, 9], [8, 5], [10, 9], [10, 11], [21, 22], [12, 11], [18, 19], [18, 4], [5, 13], [5, 1], [4, 23], [4, 3], [25, 26], [25, 24], [13, 14], [15, 14], [15, 16], [26, 27], [17, 16], [23, 24], [2, 3], [2, 0], [1, 0]],
     suffix: '_muco',
   },
+};
+
+export const ybot = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head', 'HeadTop_End', 'LeftEye', 'RightEye',
+  'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand', 'LeftHandMiddle1', 'LeftHandMiddle2', 'LeftHandMiddle3', 'LeftHandMiddle4', 'LeftHandThumb1', 'LeftHandThumb2', 'LeftHandThumb3', 'LeftHandThumb4', 'LeftHandIndex1', 'LeftHandIndex2',
+  'LeftHandIndex3', 'LeftHandIndex4', 'LeftHandRing1', 'LeftHandRing2', 'LeftHandRing3', 'LeftHandRing4', 'LeftHandPinky1', 'LeftHandPinky2', 'LeftHandPinky3', 'LeftHandPinky4',
+  'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand', 'RightHandMiddle1', 'RightHandMiddle2', 'RightHandMiddle3', 'RightHandMiddle4', 'RightHandThumb1', 'RightHandThumb2', 'RightHandThumb3', 'RightHandThumb4', 'RightHandIndex1', 'RightHandIndex2',
+  'RightHandIndex3', 'RightHandIndex4', 'RightHandRing1', 'RightHandRing2', 'RightHandRing3', 'RightHandRing4', 'RightHandPinky1', 'RightHandPinky2', 'RightHandPinky3', 'RightHandPinky4',
+  'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase', 'RightToe_End', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'LeftToe_End',
+];
+
+export const maps = {
+  ybot2skel: [
+
+  ],
 };

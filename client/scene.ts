@@ -16,6 +16,7 @@ export class PoseScene {
   materialHead!: BABYLON.StandardMaterial;
   camera!: BABYLON.ArcRotateCamera;
   light!: BABYLON.DirectionalLight;
+  spotlight!: BABYLON.SpotLight;
   ambient!: BABYLON.HemisphericLight;
   shadows!: BABYLON.ShadowGenerator;
   environment!: BABYLON.EnvironmentHelper;
@@ -31,13 +32,13 @@ export class PoseScene {
     BABYLON.Animation.AllowMatricesInterpolation = true;
     this.scene = new BABYLON.Scene(this.engine);
     this.materialBody = new BABYLON.StandardMaterial('materialTube', this.scene);
-    this.materialBody.diffuseColor = new BABYLON.Color3(0.0, 1.0, 1.0);
+    this.materialBody.diffuseColor = new BABYLON.Color3(0.0, 0.6, 0.6);
     this.materialBody.alpha = 1.0;
-    this.materialBody.specularPower = 2.5;
+    // this.materialBody.specularPower = 2.5;
     this.materialBody.useSpecularOverAlpha = true;
     this.materialHead = new BABYLON.StandardMaterial('materialHead', this.scene);
-    this.materialHead.diffuseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
-    this.materialHead.specularColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+    this.materialHead.diffuseColor = new BABYLON.Color3(1.0, 0.6, 0.6);
+    this.materialHead.specularColor = new BABYLON.Color3(1.0, 0.6, 0.6);
     this.materialHead.specularPower = 0;
     // start scene
     this.engine.runRenderLoop(() => this.scene.render());
@@ -78,24 +79,25 @@ export class PoseScene {
     this.ambient.intensity = 0.5;
     this.ambient.specular = BABYLON.Color3.Black();
     if (this.light) this.light.dispose();
-    this.light = new BABYLON.DirectionalLight('directional', new BABYLON.Vector3(-1, 2, -2), this.scene);
-    this.light.position = new BABYLON.Vector3(1, -1, 1);
+    this.light = new BABYLON.DirectionalLight('directional', new BABYLON.Vector3(0.3, -0.5, 1), this.scene); // new BABYLON.Vector3(-0.5, 1, -2), this.scene);
+    this.light.position = new BABYLON.Vector3(-2, 10, -10); // new BABYLON.Vector3(0.0, 2.0, 5.0);
     if (this.shadows) this.shadows.dispose();
     this.shadows = new BABYLON.ShadowGenerator(1024, this.light);
     this.shadows.useBlurExponentialShadowMap = true;
     this.shadows.blurKernel = 8;
-    this.light.position = new BABYLON.Vector3(0.0, 2.0, 5.0);
-    this.light.direction = new BABYLON.Vector3(-0.5, 1, -2);
+    this.shadows.depthScale = 60.0;
+    // diag exports
     window.light = this.light;
     window.meshes = this.scene.meshes;
     window.camera = this.camera;
+    // animate
     this.intro();
   }
 
   intro() {
     BABYLON.Animation.CreateAndStartAnimation('camera', this.camera, 'fov', /* FPS */ 60, /* frames */ 120, /* start */ 1.0, /* end */ 0.1, /* loop */ 0, new BABYLON.BackEase());
-    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', /* FPS */ 20, /* frames */ 80, /* start */ 0.5, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
-    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', /* FPS */ 25, /* frames */ 100, /* start */ 2, /* end */ 1, /* loop */ 0, new BABYLON.CircleEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', /* FPS */ 20, /* frames */ 80, /* start */ -0.6, /* end */ 0.3, /* loop */ 0, new BABYLON.CircleEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', /* FPS */ 25, /* frames */ 100, /* start */ -0.1, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
   }
 
   inspector() {
