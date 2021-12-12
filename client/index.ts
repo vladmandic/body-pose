@@ -101,6 +101,23 @@ async function loadImage(url: string) {
   log(`image | ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
 }
 
+async function enumerateSkeletons(skeleton: string) {
+  dom.skeleton.innerHTML = '';
+  if (skeleton === 'all') {
+    for (const name of Object.keys(skeletons)) {
+      const skeletonType = document.createElement('option');
+      skeletonType.value = name;
+      skeletonType.innerText = name;
+      dom.skeleton.appendChild(skeletonType);
+    }
+  } else {
+    const skeletonType = document.createElement('option');
+    skeletonType.value = skeleton;
+    skeletonType.innerText = skeleton;
+    dom.skeleton.appendChild(skeletonType);
+  }
+}
+
 async function processInput(url: string) {
   dom.status.innerText = 'loading data...';
   const res = await fetch(url);
@@ -138,8 +155,15 @@ async function processInput(url: string) {
   await mesh.dispose();
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
+  enumerateSkeletons(json.options.skeleton);
   dom.split.style.display = 'block';
   dom.options.style.display = 'block';
+  render(0);
+}
+
+async function refresh() {
+  await mesh.dispose();
+  await avatar.dispose();
   render(0);
 }
 
@@ -161,22 +185,6 @@ async function enumerateInputs() {
     dom.image.style.width = `${100 - val}%`;
     dom.output.style.width = `${val}%`;
   };
-  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.animate(15) : avatar.animate());
-}
-
-async function refresh() {
-  await mesh.dispose();
-  await avatar.dispose();
-  render(0);
-}
-
-async function enumerateOutputs() {
-  for (const name of Object.keys(skeletons)) {
-    const skeleton = document.createElement('option');
-    skeleton.value = name;
-    skeleton.innerText = name;
-    dom.skeleton.appendChild(skeleton);
-  }
   dom.skeleton.onchange = async () => { // event when sample is selected
     if (dom.sample.options.selectedIndex > 0) await refresh();
   };
@@ -189,12 +197,12 @@ async function enumerateOutputs() {
   dom.joint.onchange = async () => {
     if (json && json.options.image) await refresh();
   };
+  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.animate(15) : avatar.animate());
 }
 
 async function main() {
   dom.status.innerText = 'ready...';
   await enumerateInputs();
-  await enumerateOutputs();
 }
 
 window.onload = main;

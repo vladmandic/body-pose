@@ -75,24 +75,34 @@ async function body(frame: number, poses: Pose[][], edges: Edge[], joints: Joint
   for (let person = 0; person < poses[frame].length; person++) {
     if (!persons[person]) {
       persons[person] = new BABYLON.AbstractMesh(`pose${person}`, t.scene); // create person placeholder if it doesnt exist
-      parents[person + 'center'] = new BABYLON.AbstractMesh(`center${person}`, t.scene); // create person placeholder if it doesnt exist
+      parents[person + 'center'] = new BABYLON.AbstractMesh(`center${person}`, t.scene);
       parents[person + 'center'].parent = persons[person];
-      parents[person + 'left'] = new BABYLON.AbstractMesh(`left${person}`, t.scene); // create person placeholder if it doesnt exist
+      parents[person + 'left'] = new BABYLON.AbstractMesh(`left${person}`, t.scene);
       parents[person + 'left'].parent = persons[person];
-      parents[person + 'right'] = new BABYLON.AbstractMesh(`right${person}`, t.scene); // create person placeholder if it doesnt exist
+      parents[person + 'right'] = new BABYLON.AbstractMesh(`right${person}`, t.scene);
       parents[person + 'right'].parent = persons[person];
-      parents[person + 'ends'] = new BABYLON.AbstractMesh(`ends${person}`, t.scene); // create person placeholder if it doesnt exist
+      parents[person + 'ends'] = new BABYLON.AbstractMesh(`ends${person}`, t.scene);
       parents[person + 'ends'].parent = persons[person];
     }
     persons[person].setEnabled(true); // enable person
-    const filtered = edges.filter((_edge, i) => { // filter to only edges that match selected skeleton
-      if (joints[i] === skeletons[skeleton].joints[i]) return true; // exact match
-      if (joints[i].endsWith(skeletons[skeleton].suffix)) { // skeleton name match
-        const joint = joints[i].substring(0, joints[i].indexOf('_')); // find original joint name without suffix
-        return skeletons[skeleton].joints.includes(joint); // does target skeleton contain joint
-      }
-      return false;
-    });
+    let filtered: Edge[] = [];
+    if (joints.length === 122 && skeleton !== 'all') { // only filter if we have all joints and want to display only specific skeleton
+      filtered = edges.filter((_edge, i) => { // filter to only edges that match selected skeleton
+        if (skeletons[skeleton].joints.includes(joints[i])) {
+          return true; // exact match
+        }
+        /*
+        if (joints[i].endsWith(skeletons[skeleton].suffix)) { // skeleton name match
+          const joint = joints[i].substring(0, joints[i].indexOf('_')); // find original joint name without suffix
+          return skeletons[skeleton].joints.includes(joint); // does target skeleton contain joint
+        }
+        */
+        return false;
+      });
+      console.log({ skeleton, joints, edges, const: skeletons[skeleton], filtered });
+    } else {
+      filtered = edges;
+    }
     // filtered.length = skeletons[skeleton].edges.length; // crop length if we have too many joints
     for (let i = 0; i < filtered.length; i++) {
       const pose: Pose = poses[frame][person];

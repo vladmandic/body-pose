@@ -35,7 +35,7 @@ export const skeletons: Record<string, Skeleton> = {
     // joints: ['pelv_smpl', 'lhip_smpl', 'rhip_smpl', 'bell_smpl', 'lkne_smpl', 'rkne_smpl', 'spin_smpl', 'lank_smpl', 'rank_smpl', 'thor_smpl', 'ltoe_smpl', 'rtoe_smpl', 'neck_smpl', 'lcla_smpl', 'rcla_smpl',
     //   'head_smpl', 'lsho_smpl', 'rsho_smpl', 'lelb_smpl', 'relb_smpl', 'lwri_smpl', 'rwri_smpl', 'lhan_smpl', 'rhan_smpl', 'htop_mpi_inf_3dhp', 'learcoco', 'leyecoco', 'nosecoco', 'rearcoco', 'reyecoco'],
     joints: ['pelv', 'lhip', 'rhip', 'bell', 'lkne', 'rkne', 'spin', 'lank', 'rank', 'thor', 'ltoe', 'rtoe', 'neck', 'lcla', 'rcla', 'head', 'lsho', 'rsho', 'lelb', 'relb', 'lwri', 'rwri', 'lhan', 'rhan',
-      /* mpi_inf_3dhp */ 'htop', /* coco */ 'lear', 'leye', 'nose', 'rear', 'reye'],
+      /* mpi_inf_3dhp */ 'htop', /* coco */ 'lear', 'leye', 'nose', 'rear', 'reye'], // not mapped
     edges: [[1, 4], [1, 0], [2, 5], [2, 0], [3, 6], [3, 0], [4, 7], [5, 8], [6, 9], [7, 10], [8, 11], [9, 12], [12, 13], [12, 14], [12, 15], [13, 16], [14, 17], [16, 18], [17, 19], [18, 20], [19, 21], [20, 22],
       [21, 23], [25, 26], [26, 27], [27, 29], [28, 29], [24, 15], [15, 27]],
     suffix: '',

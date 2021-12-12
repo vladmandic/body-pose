@@ -36,8 +36,8 @@ export class PoseScene {
     this.materialBody.alpha = 1.0;
     this.materialBody.useSpecularOverAlpha = true;
     this.materialHead = new BABYLON.StandardMaterial('materialHead', this.scene);
-    this.materialHead.diffuseColor = new BABYLON.Color3(1.0, 0.6, 0.6);
-    this.materialHead.specularColor = new BABYLON.Color3(1.0, 0.6, 0.6);
+    this.materialHead.diffuseColor = new BABYLON.Color3(0.6, 1.0, 1.0);
+    this.materialHead.specularColor = new BABYLON.Color3(0.6, 1.0, 1.0);
     this.materialHead.specularPower = 0;
     // start scene
     this.engine.runRenderLoop(() => this.scene.render());
