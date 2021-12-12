@@ -31,7 +31,7 @@
     <div>
       <input type="range" id="split" name="split" min="0" max="100" value="50" step="1" style="width: 100vw; display: none; margin-bottom: 32px">
     </div>
-    <h1 style="position: absolute; bottom: 0; right: 32px">Advanced 3D Body Pose Analysis</h1>
+    <h1 style="position: absolute; bottom: 0; right: 32px; pointer-events: none;">Advanced 3D Body Pose Analysis</h1>
     <div id="selections" style="margin: 8px; line-height: 32px; float: left">
       <span>select example
         <select id="input" name="input" title="input" style="margin-left: 18px; width: 400px" class="input"></select>
@@ -46,7 +46,7 @@
         <div>model type
           <select id="model" name="model" title="model" style="margin-left: 42px" class="input">
             <option value="mesh" selected>3d wireframe</option>
-            <option value="avatar" disabled>avatar</option>
+            <option value="avatar" disables>avatar</option>
           </select>
         </div>
         <div>skeleton type

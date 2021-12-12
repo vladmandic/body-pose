@@ -1,11 +1,9 @@
 import type { Skeleton } from './types';
 
 export const exclude: Record<string, Array<string>> = {
-  all: [
-    'nose_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'htop_h36m', 'htop_muco', 'htop_sailvos',
+  all: ['nose_sailvos', 'pelv', 'pelv_muco', 'pelv_sailvos', 'htop_h36m', 'htop_muco', 'htop_sailvos',
     'lelb_h36m', 'lelb_muco', 'lhip_cmu_panoptic', 'lhip_h36m', 'lhip_sailvos', 'lwri_sailvos', 'lsho_cmu_panoptic', 'lfoo_muco', 'lhan_muco', 'lwri_muco',
-    'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'rhip_sailvos', 'rwri_sailvos', 'rsho_cmu_panoptic', 'rfoo_muco', 'rhan_muco', 'rwri_muco',
-  ],
+    'relb_h36m', 'relb_muco', 'rhip_cmu_panoptic', 'rhip_h36m', 'rhip_sailvos', 'rwri_sailvos', 'rsho_cmu_panoptic', 'rfoo_muco', 'rhan_muco', 'rwri_muco'],
   smpl_head_30: ['htop_muco', 'htop_h36m', 'pelv'],
   smpl_24: [],
   coco_19: [],

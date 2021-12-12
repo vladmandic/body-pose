@@ -183,6 +183,9 @@ async function enumerateOutputs() {
   dom.bone.onchange = async () => {
     if (json && json.options.image) await refresh();
   };
+  dom.model.onchange = async () => {
+    if (json && json.options.image) await refresh();
+  };
   dom.joint.onchange = async () => {
     if (json && json.options.image) await refresh();
   };

@@ -39,8 +39,6 @@ async function body(poses: Pose[]) {
     console.log({ pose, skeleton });
     // @ts-ignore;
     window.pose = pose; window.skeleton = skeleton;
-    const bones = skeleton.bones.map((bone) => bone.name);
-    console.log({ bones });
     /*
     for (let i = 0; i < filtered.length; i++) {
       const pose: Pose = poses[frame][person];

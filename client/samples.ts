@@ -10,6 +10,7 @@ export const samples = [
   '../media/BasketballDribble.jpg.json',
   '../media/BasketballShot.jpg.json',
   '../media/BasketballDunk.jpg.json',
+  '../media/Model.jpg.json',
   // videos
   '../media/BaseballPitchSlowMo.webm.json',
   '../media/TennisSlowMo.webm.json',
@@ -21,4 +22,5 @@ export const samples = [
   '../media/RhythmicGymnasticsSlowMo02.webm.json',
   '../media/RhythmicGymnasticsSlowMo03.webm.json',
   // 'media/SoccerCompilation.webm.json',
+  '../media/Test-SMPL.jpg.json',
 ];

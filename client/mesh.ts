@@ -3,7 +3,7 @@ import 'babylonjs-inspector';
 import { PoseScene } from './scene';
 import * as utils from './utils';
 import { skeletons, exclude } from './constants';
-import type { Result, Joint, Edge, Pose } from './types';
+import type { Result, Joint, Edge, Pose, Point3D } from './types';
 
 let t: PoseScene | null;
 let meshes: Record<string, BABYLON.Mesh> = {};
@@ -13,6 +13,13 @@ let centers: { x: number[], y: number[], z: number[] } = { x: [], y: [], z: [] }
 
 const avg = (num: number[]): number => (num.length > 0 ? num.reduce((prev, curr) => prev + curr, 0) / num.length : 0);
 
+function getTexture(index: number, scene: BABYLON.Scene) {
+  const texture = new BABYLON.DynamicTexture(`numberedTexture${index}`, { width: 100, height: 100 }, scene, false);
+  texture.vAng = (153 / 180) * Math.PI; // rotate text to front
+  texture.drawText(`${index}`, null, null, '32px Segoe UI', '#000000', '#80FFFF', false);
+  return texture;
+}
+
 function head(person: number, pt0: BABYLON.Vector3, diameter: number, drawNumber: boolean) {
   if (!t) return;
   const part = `head${person}`;
@@ -20,11 +27,8 @@ function head(person: number, pt0: BABYLON.Vector3, diameter: number, drawNumber
     // const diameter = Math.abs(pt1.x - pt0.x) + Math.abs(pt1.y - pt0.y) + Math.abs(pt1.z - pt0.z); // based on detected head size
     meshes[part] = BABYLON.MeshBuilder.CreateSphere(part, { diameter }, t.scene);
     if (drawNumber) { // draw person number if more than one person
-      const headTexture = new BABYLON.DynamicTexture(`headTexture${person}`, { width: 100, height: 100 }, t.scene, false);
-      headTexture.vAng = (160 / 180) * Math.PI; // rotate text to front
-      headTexture.drawText(`${person}`, null, null, '32px Segoe UI', '#000000', '#80FFFF', false);
       meshes[part].material = t.materialHead.clone(`materialHead${person}`);
-      (meshes[part].material as BABYLON.StandardMaterial).diffuseTexture = headTexture;
+      (meshes[part].material as BABYLON.StandardMaterial).diffuseTexture = getTexture(person, t.scene);
     } else {
       meshes[part].material = t.materialHead;
     }
@@ -62,7 +66,7 @@ function bone(joint: string, person: number, pt0: BABYLON.Vector3, pt1: BABYLON.
   }
 }
 
-async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: Array<Joint>, skeleton: string) {
+async function body(frame: number, poses: Pose[][], edges: Edge[], joints: Joint[], skeleton: string) {
   if (!poses[frame] || !t) return;
   if (persons.length > 1) for (const person of persons) person.setEnabled(false); // disable all poses to start with unless we're tracking just one
   centers = { x: [], y: [], z: [] };
@@ -89,7 +93,7 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
       }
       return false;
     });
-    filtered.length = skeletons[skeleton].edges.length; // crop length if we have too many joints
+    // filtered.length = skeletons[skeleton].edges.length; // crop length if we have too many joints
     for (let i = 0; i < filtered.length; i++) {
       const pose: Pose = poses[frame][person];
       const pt0 = new BABYLON.Vector3(pose[edges[i][0]][0], pose[edges[i][0]][1], pose[edges[i][0]][2]);
@@ -98,7 +102,7 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
       const depth = Math.min(Math.sqrt(Math.abs(1 / (pt0.z + 0.5))), 2); // z-distance of a point
       if (exclude[skeleton].includes(joints[i])) { // skip some joints around head
         continue;
-      } else if (joints[i].startsWith('head')) { // create single sphere for any possible head object
+      } else if (skeleton === 'all' && joints[i].startsWith('head')) { // create single sphere for any possible head object
         const diameter = 1.75 * distance * depth * jointScale / 100;
         head(person, pt0, diameter, poses[frame].length > 1);
       } else { // create tube for all other objects
@@ -111,6 +115,24 @@ async function body(frame: number, poses: Pose[][], edges: Array<Edge>, joints: 
         centers.y.push(pt0.y);
         centers.z.push(pt0.z);
       }
+    }
+  }
+}
+
+async function points(poses: Pose[], joints: Joint[]) {
+  if (!poses || !t) return;
+  for (let i = 0; i < poses.length; i++) {
+    if (!parents[i + 'points']) parents[i + 'points'] = new BABYLON.AbstractMesh(`points${i}`, t.scene);
+    for (let j = 0; j < poses[i].length; j++) {
+      const pt: Point3D = poses[i][j];
+      const name = `${joints[j]}${i}`;
+      const material = new BABYLON.StandardMaterial(name, t.scene);
+      material.diffuseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+      material.diffuseTexture = getTexture(j, t.scene);
+      meshes[name] = BABYLON.MeshBuilder.CreateSphere(name, { diameter: 0.03 }, t.scene);
+      meshes[name].material = material;
+      meshes[name].parent = parents[i + 'points'];
+      meshes[name].position = new BABYLON.Vector3(pt[0], pt[1], pt[2]);
     }
   }
 }
@@ -187,4 +209,6 @@ export async function draw(json: Result, frame: null | number, canvas: HTMLCanva
     t = new PoseScene(canvas, fov); // create new scene
   }
   body(frame, json.poses, json.edges, json.joints, skeleton);
+  // body(frame, json.poses, skeletons[skeleton].edges, skeletons[skeleton].joints, skeleton);
+  // points(json.poses[frame], json.joints);
 }
