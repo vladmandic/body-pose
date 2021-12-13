@@ -19,6 +19,7 @@ const dom = { // pointers to dom objects
   split: document.getElementById('split') as HTMLInputElement,
   options: document.getElementById('options') as HTMLDivElement,
   animate: document.getElementById('animate') as HTMLButtonElement,
+  center: document.getElementById('center') as HTMLButtonElement,
   bone: document.getElementById('bone') as HTMLInputElement,
   joint: document.getElementById('joint') as HTMLInputElement,
 };
@@ -193,6 +194,12 @@ async function enumerateInputs() {
     if (json && json.options.image) await refresh();
   };
   dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.animate(15) : avatar.animate());
+  dom.center.onclick = () => {
+    if (!json) return;
+    const maxmin = utils.maxmin(json.poses);
+    const scene = dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.getScene() : avatar.getScene();
+    if (scene) utils.moveCamera(scene.camera, (maxmin.max[0] - maxmin.min[0]) / 2 + maxmin.min[0], (maxmin.max[1] - maxmin.min[1]) / 2, (maxmin.max[2] - maxmin.min[2]) / 2, 500);
+  };
 }
 
 async function main() {

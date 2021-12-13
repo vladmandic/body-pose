@@ -1,3 +1,4 @@
+import * as BABYLON from 'babylonjs';
 import type { Point3D, Pose } from './types';
 
 export function maxmin(poses: Pose[][]): { max: [number, number, number], min: [number, number, number] } {
@@ -35,4 +36,10 @@ export function fov(poses: Pose[][]): number {
   const scaled = maxmin(poses);
   const res = 10 * Math.sqrt(((scaled.max[0] - scaled.min[0]) ** 2) + ((scaled.max[1] - scaled.min[1]) ** 2));
   return res;
+}
+
+export function moveCamera(camera: BABYLON.ArcRotateCamera, x: number, y: number, z: number, ms: number) {
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.x', 60, 60 * ms / 1000, camera.target.x, x, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.y', 60, 60 * ms / 1000, camera.target.y, y, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.z', 60, 60 * ms / 1000, camera.target.z, z, 0, new BABYLON.BackEase());
 }

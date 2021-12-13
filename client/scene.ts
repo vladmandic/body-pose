@@ -49,7 +49,7 @@ export class PoseScene {
     this.camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, cameraRadius, new BABYLON.Vector3(0.5, 0.5, 0.5), this.scene);
     this.camera.attachControl(this.canvas, false);
     this.camera.lowerRadiusLimit = 0.001;
-    this.camera.upperRadiusLimit = 50;
+    this.camera.upperRadiusLimit = 200;
     this.camera.wheelDeltaPercentage = 0.01;
     this.camera.position = new BABYLON.Vector3(0, 2.0, -12);
     this.camera.target = new BABYLON.Vector3(0, 0.5, -1); // slightly elevated initial view
@@ -65,7 +65,7 @@ export class PoseScene {
       cameraContrast: 2,
       cameraExposure: 1,
       groundColor: new BABYLON.Color3(0.3, 0.3, 0.3), // new BABYLON.Color3(0.0, 0.3, 0.5),
-      groundSize: 15,
+      groundSize: 5,
       groundShadowLevel: 0.4, // shadow darkness
       groundTexture: '../assets/ground.png',
       enableGroundShadow: true,

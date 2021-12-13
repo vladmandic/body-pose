@@ -8,6 +8,7 @@ import type { Result, Pose } from './types';
 let t: PoseScene | null;
 let persons: Array<BABYLON.Skeleton | null> = [];
 
+export const getScene = () => t;
 const getBone = (skeleton: BABYLON.Skeleton, name: string): (BABYLON.Bone | undefined) => skeleton?.bones.find((bone) => bone.name === name) as BABYLON.Bone;
 
 export async function load(): Promise<BABYLON.Skeleton | null> {

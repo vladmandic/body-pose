@@ -23,15 +23,15 @@
   </head>
   <body>
     <pre id="status" style="position: absolute; top: 12px; right: 20px; background-color: grey; padding: 8px; box-shadow: 2px 2px black; cursor: crosshair"></pre>
-    <div id="media" style="display: flex">
+    <div id="media" style="display: flex; overflow: hidden; max-height: 80vh;">
       <video id="input-video" alt="video-input" style="width: 50%; height: fit-content; display: none" autoplay loop muted controlslist="nofullscreen nodownload noremoteplayback" disablepictureinpicture></video>
       <img id="input-image" alt="video-input" style="width: 50%; height: fit-content; display: none">
       <canvas id="output" style="width: 50%; height: fit-content; display: none"></canvas>
     </div>
     <div>
-      <input type="range" id="split" name="split" min="0" max="100" value="50" step="1" style="width: 100vw; display: none; margin-bottom: 32px">
+      <input type="range" id="split" name="split" min="0" max="100" value="50" step="1" style="width: 100vw; display: none; margin-bottom: 16px">
     </div>
-    <h1 style="position: absolute; bottom: 0; right: 32px; pointer-events: none;">Advanced 3D Body Pose Analysis</h1>
+    <h1 style="position: absolute; bottom: -16px; right: 16px; pointer-events: none;">Advanced 3D Body Pose Analysis</h1>
     <div id="selections" style="margin: 8px; line-height: 32px; float: left">
       <span>select example
         <select id="input" name="input" title="input" style="margin-left: 18px; width: 400px" class="input"></select>
@@ -60,8 +60,9 @@
           <input type="range" id="joint" name="joint" min="10" max="300" value="100" step="1" style="width: 240px; vertical-align: middle">
           <label class="input" style="margin-right: 14px" for="joint">joint size</label>
         </div>
-        <div>
-          <button id="animate" class="input" style="background: white; color: black; height: 30px; width: 366px; border: none; margin-top: 8px">animate camera</button>
+        <div>Camera
+          <button id="center" class="input" style="background: white; color: black; height: 30px; width: 140px; border: none; margin-top: 8px; margin-left: 8px">center</button>
+          <button id="animate" class="input" style="background: white; color: black; height: 30px; width: 140px; border: none; margin-top: 8px; margin-left: 8px">animate</button>
         </div>
       </div>
     </div>

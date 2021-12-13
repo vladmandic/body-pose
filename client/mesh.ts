@@ -14,6 +14,7 @@ let persons: Array<BABYLON.AbstractMesh> = [];
 let centers: { x: number[], y: number[], z: number[] } = { x: [], y: [], z: [] };
 
 const avg = (num: number[]): number => (num.length > 0 ? num.reduce((prev, curr) => prev + curr, 0) / num.length : 0);
+export const getScene = () => t;
 
 function getTexture(index: number, scene: BABYLON.Scene) {
   const texture = new BABYLON.DynamicTexture(`numberedTexture${index}`, { width: 100, height: 100 }, scene, false);
