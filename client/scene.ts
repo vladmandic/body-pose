@@ -65,7 +65,7 @@ export class PoseScene {
       cameraContrast: 2,
       cameraExposure: 1,
       groundColor: new BABYLON.Color3(0.3, 0.3, 0.3), // new BABYLON.Color3(0.0, 0.3, 0.5),
-      groundSize: 5,
+      groundSize: 15,
       groundShadowLevel: 0.4, // shadow darkness
       groundTexture: '../assets/ground.png',
       enableGroundShadow: true,

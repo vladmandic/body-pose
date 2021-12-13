@@ -38,8 +38,45 @@ export function fov(poses: Pose[][]): number {
   return res;
 }
 
-export function moveCamera(camera: BABYLON.ArcRotateCamera, x: number, y: number, z: number, ms: number) {
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.x', 60, 60 * ms / 1000, camera.target.x, x, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.y', 60, 60 * ms / 1000, camera.target.y, y, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.z', 60, 60 * ms / 1000, camera.target.z, z, 0, new BABYLON.BackEase());
+export function moveCamera(camera: BABYLON.ArcRotateCamera, ms: number, target: { x: number, y: number, z: number }, position: { x: number, y: number, z: number }) {
+  console.log({ position, target });
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.x', 60, 60 * ms / 1000, camera.target.x, target.x, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.y', 60, 60 * ms / 1000, camera.target.y, target.y, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.z', 60, 60 * ms / 1000, camera.target.z, target.z, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.x', 60, 60 * ms / 1000, camera.position.x, position.x, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.y', 60, 60 * ms / 1000, camera.position.y, position.y, 0, new BABYLON.BackEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.z', 60, 60 * ms / 1000, camera.position.z, position.z, 0, new BABYLON.BackEase());
+  setTimeout(() => {
+    camera.target = new BABYLON.Vector3(target.x, target.y, target.z);
+    camera.position = new BABYLON.Vector3(position.x, position.y, position.z);
+  }, 25 + ms / 1000);
 }
+
+export const angles = (pt0: Point3D, pt1: Point3D, pt2: Point3D): BABYLON.Vector3 => {
+  // @ts-ignore
+  let thetaX: number;
+  let thetaY: number;
+  let thetaZ: number;
+  if (pt1[0] < 1) { // YZX calculation
+    if (pt1[0] > -1) {
+      thetaZ = Math.asin(pt1[0]);
+      thetaY = Math.atan2(-pt2[0], pt0[0]);
+      thetaX = Math.atan2(-pt1[2], pt1[1]);
+    } else {
+      thetaZ = -Math.PI / 2;
+      thetaY = -Math.atan2(pt2[1], pt2[2]);
+      thetaX = 0;
+    }
+  } else {
+    thetaZ = Math.PI / 2;
+    thetaY = Math.atan2(pt2[1], pt2[2]);
+    thetaX = 0;
+  }
+  if (Number.isNaN(thetaX)) thetaX = 0;
+  if (Number.isNaN(thetaY)) thetaY = 0;
+  if (Number.isNaN(thetaZ)) thetaZ = 0;
+  const pitch = 2 * -thetaX;
+  const yaw = 2 * -thetaY;
+  const roll = 2 * -thetaZ;
+  return new BABYLON.Vector3(pitch, yaw, roll);
+};

@@ -74,8 +74,9 @@ export const skeletons: Record<string, Skeleton> = {
 
 export const maps = {
   ybot: [ // ybot bones are hierarchical vectors defined by relative position, rotation and scale
-    'Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head', 'LeftEye', 'RightEye', 'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand', 'RightShoulder', 'RightArm', 'RightForeArm', 'RightHand',
-    'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase',
+    /* 00 */ 'Hips', /* 01 */ 'Spine', /* 02 */ 'Spine1', /* 03 */ 'Spine2', /* 04 */ 'Neck', /* 05 */ 'Head', /* 06 */ 'LeftEye', /* 07 */ 'RightEye', /* 08 */ 'LeftShoulder',
+    /* 09 */ 'LeftArm', /* 10 */ 'LeftForeArm', /* 11 */ 'LeftHand', /* 12 */ 'RightShoulder', /* 13 */ 'RightArm', /* 14 */ 'RightForeArm', /* 15 */ 'RightHand', /* 16 */ 'RightUpLeg',
+    /* 17 */ 'RightLeg', /* 18 */ 'RightFoot', /* 19 */ 'RightToeBase', /* 20 */ 'LeftUpLeg', /* 21 */ 'LeftLeg', /* 22 */ 'LeftFoot', /* 23 */ 'LeftToeBase',
     // also part of general skeleton definition but currently not used
     // 'LeftHandMiddle1', 'LeftHandMiddle2', 'LeftHandMiddle3', 'LeftHandMiddle4', 'LeftHandThumb1', 'LeftHandThumb2', 'LeftHandThumb3', 'LeftHandThumb4', 'LeftHandIndex1', 'LeftHandIndex2',
     // 'LeftHandIndex3', 'LeftHandIndex4', 'LeftHandRing1', 'LeftHandRing2', 'LeftHandRing3', 'LeftHandRing4', 'LeftHandPinky1', 'LeftHandPinky2', 'LeftHandPinky3', 'LeftHandPinky4',
@@ -84,7 +85,8 @@ export const maps = {
     // 'HeadTop_End', 'RightToe_End', 'LeftToe_End',
   ],
   smpl: [ // smpl joints are 3d points
-    'pelv_smpl', 'lhip_smpl', 'rhip_smpl', 'bell_smpl', 'lkne_smpl', 'rkne_smpl', 'spin_smpl', 'lank_smpl', 'rank_smpl', 'thor_smpl', 'ltoe_smpl', 'rtoe_smpl', 'neck_smpl', 'lcla_smpl', 'rcla_smpl',
-    'head_smpl', 'lsho_smpl', 'rsho_smpl', 'lelb_smpl', 'relb_smpl', 'lwri_smpl', 'rwri_smpl', 'lhan_smpl', 'rhan_smpl', 'htop_mpi_inf_3dhp', 'learcoco', 'leyecoco', 'nosecoco', 'rearcoco', 'reyecoco',
+    /* 00 */ 'pelv_smpl', /* 01 */ 'lhip_smpl', /* 02 */ 'rhip_smpl', /* 03 */ 'bell_smpl', /* 04 */ 'lkne_smpl', /* 05 */ 'rkne_smpl', /* 06 */ 'spin_smpl', /* 07 */ 'lank_smpl', /* 08 */ 'rank_smpl', /* 09 */ 'thor_smpl',
+    /* 10 */ 'ltoe_smpl', /* 11 */ 'rtoe_smpl', /* 12 */ 'neck_smpl', /* 13 */ 'lcla_smpl', /* 14 */ 'rcla_smpl', /* 15 */ 'head_smpl', /* 16 */ 'lsho_smpl', /* 17 */ 'rsho_smpl', /* 18 */ 'lelb_smpl', /* 19 */ 'relb_smpl',
+    /* 20 */ 'lwri_smpl', /* 21 */ 'rwri_smpl', /* 22 */ 'lhan_smpl', /* 23 */ 'rhan_smpl', /* 24 */ 'htop_mpi_inf_3dhp', /* 25 */ 'learcoco', /* 26 */ 'leyecoco', /* 27 */ 'nosecoco', /* 28 */ 'rearcoco', /* 29 */ 'reyecoco',
   ],
 };

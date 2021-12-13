@@ -2,7 +2,6 @@ import * as BABYLON from 'babylonjs';
 import 'babylonjs-inspector';
 import { PoseScene } from './scene';
 import * as utils from './utils';
-import { maps } from './constants';
 import type { Result, Pose } from './types';
 
 let t: PoseScene | null;
@@ -37,13 +36,10 @@ async function body(poses: Pose[]) {
     if (!persons[person]) continue;
     const pose = poses[person];
     const skeleton = persons[person];
-    if (!skeleton) continue;
-    console.log({ pose, skeleton });
-    for (let i = 0; i < maps.ybot.length; i++) {
-      const bone = getBone(skeleton, maps.ybot[i]) as BABYLON.Bone;
-      console.log('bone:', bone.name);
-      // tbd
-    }
+    if (!pose || !skeleton) continue;
+    // const bone = persons[person]?.bones[0]; // Hips
+    // const angle = utils.angles(pose[1], pose[2], pose[0]); // rhip, lhip, pelv
+    // console.log({ pose, bone, angle });
   }
 }
 

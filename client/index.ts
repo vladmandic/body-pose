@@ -198,7 +198,9 @@ async function enumerateInputs() {
     if (!json) return;
     const maxmin = utils.maxmin(json.poses);
     const scene = dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.getScene() : avatar.getScene();
-    if (scene) utils.moveCamera(scene.camera, (maxmin.max[0] - maxmin.min[0]) / 2 + maxmin.min[0], (maxmin.max[1] - maxmin.min[1]) / 2, (maxmin.max[2] - maxmin.min[2]) / 2, 500);
+    const position = { x: (maxmin.max[0] - maxmin.min[0]) / 2 + maxmin.min[0], y: (maxmin.max[1] - maxmin.min[1]) / 2, z: (maxmin.max[2] - maxmin.min[2]) / 2 };
+    const target = { x: 0, y: 2, z: -12 };
+    if (scene) utils.moveCamera(scene.camera, 500, position, target);
   };
 }
 
