@@ -5,6 +5,8 @@ import * as utils from './utils';
 import { skeletons, exclude } from './constants';
 import type { Result, Joint, Edge, Pose, Point3D } from './types';
 
+const numberedJoints = false;
+
 let t: PoseScene | null;
 let meshes: Record<string, BABYLON.Mesh> = {};
 let parents: Record<string, BABYLON.AbstractMesh> = {};
@@ -24,7 +26,6 @@ function head(person: number, pt0: BABYLON.Vector3, diameter: number, drawNumber
   if (!t) return;
   const part = `head${person}`;
   if (!meshes[part] || meshes[part].isDisposed()) { // body part seen for the first time
-    // const diameter = Math.abs(pt1.x - pt0.x) + Math.abs(pt1.y - pt0.y) + Math.abs(pt1.z - pt0.z); // based on detected head size
     meshes[part] = BABYLON.MeshBuilder.CreateSphere(part, { diameter }, t.scene);
     if (drawNumber) { // draw person number if more than one person
       meshes[part].material = t.materialHead.clone(`materialHead${person}`);
@@ -85,25 +86,9 @@ async function body(frame: number, poses: Pose[][], edges: Edge[], joints: Joint
       parents[person + 'ends'].parent = persons[person];
     }
     persons[person].setEnabled(true); // enable person
-    let filtered: Edge[] = [];
-    if (joints.length === 122 && skeleton !== 'all') { // only filter if we have all joints and want to display only specific skeleton
-      filtered = edges.filter((_edge, i) => { // filter to only edges that match selected skeleton
-        if (skeletons[skeleton].joints.includes(joints[i])) {
-          return true; // exact match
-        }
-        /*
-        if (joints[i].endsWith(skeletons[skeleton].suffix)) { // skeleton name match
-          const joint = joints[i].substring(0, joints[i].indexOf('_')); // find original joint name without suffix
-          return skeletons[skeleton].joints.includes(joint); // does target skeleton contain joint
-        }
-        */
-        return false;
-      });
-      console.log({ skeleton, joints, edges, const: skeletons[skeleton], filtered });
-    } else {
-      filtered = edges;
-    }
-    // filtered.length = skeletons[skeleton].edges.length; // crop length if we have too many joints
+    const filtered: Edge[] = joints.length === 122 && skeleton !== 'all' // filter if we have all joints and want to display only specific skeleton
+      ? edges.filter((_edge, i) => skeletons[skeleton].joints.includes(joints[i])) // does desired skeleton include current joint
+      : edges;
     for (let i = 0; i < filtered.length; i++) {
       const pose: Pose = poses[frame][person];
       const pt0 = new BABYLON.Vector3(pose[edges[i][0]][0], pose[edges[i][0]][1], pose[edges[i][0]][2]);
@@ -120,7 +105,7 @@ async function body(frame: number, poses: Pose[][], edges: Edge[], joints: Joint
         const jointDiameter = depth * (distance + 0.1) / 20 * jointScale / 100 * 2;
         bone(joints[i], person, pt0, pt1, boneRadius, jointDiameter);
       }
-      if (joints[i] === 'neck') {
+      if (joints[i] === 'neck') { // used for camera animation around scene central point
         centers.x.push(pt0.x);
         centers.y.push(pt0.y);
         centers.z.push(pt0.z);
@@ -219,6 +204,5 @@ export async function draw(json: Result, frame: null | number, canvas: HTMLCanva
     t = new PoseScene(canvas, fov); // create new scene
   }
   body(frame, json.poses, json.edges, json.joints, skeleton);
-  // body(frame, json.poses, skeletons[skeleton].edges, skeletons[skeleton].joints, skeleton);
-  // points(json.poses[frame], json.joints);
+  if (numberedJoints) points(json.poses[frame], json.joints);
 }

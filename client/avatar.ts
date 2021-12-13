@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs';
 import 'babylonjs-inspector';
 import { PoseScene } from './scene';
 import * as utils from './utils';
+import { maps } from './constants';
 import type { Result, Pose } from './types';
 
 let t: PoseScene | null;
@@ -37,17 +38,11 @@ async function body(poses: Pose[]) {
     const skeleton = persons[person];
     if (!skeleton) continue;
     console.log({ pose, skeleton });
-    // @ts-ignore;
-    window.pose = pose; window.skeleton = skeleton;
-    /*
-    for (let i = 0; i < filtered.length; i++) {
-      const pose: Pose = poses[frame][person];
-      const pt0 = new BABYLON.Vector3(pose[edges[i][0]][0], pose[edges[i][0]][1], pose[edges[i][0]][2]);
-      const pt1 = new BABYLON.Vector3(pose[edges[i][1]][0], pose[edges[i][1]][1], pose[edges[i][1]][2]);
-      const distance = BABYLON.Vector3.Distance(pt0, pt1); // edge length
-      const depth = Math.min(Math.sqrt(Math.abs(1 / (pt0.z + 0.5))), 2); // z-distance of a point
+    for (let i = 0; i < maps.ybot.length; i++) {
+      const bone = getBone(skeleton, maps.ybot[i]) as BABYLON.Bone;
+      console.log('bone:', bone.name);
+      // tbd
     }
-    */
   }
 }
 

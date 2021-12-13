@@ -30,7 +30,6 @@ const log = (...msg: unknown[]) => {
 };
 
 let lastFrame = 0;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
   if (!json) return;
   if (json.options.image) {
@@ -47,11 +46,9 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
     if (frame >= json.frames) frame = json.frames - 1;
     if (frame !== lastFrame) await mesh.draw(json, frame, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value); // draw only if target frame is different
     lastFrame = frame;
-    // console.log({ _timestamp, _metadata });
+    // console.log({ _timestamp, _metadata }); // can be used for interim animations for inputs with low frame rate
     // @ts-ignore // trigger once on each new frame
     dom.video.requestVideoFrameCallback(render);
-    // if (dom.video.paused) setTimeout(render, 1000);
-    // else requestAnimationFrame(render);
   }
 }
 
@@ -73,7 +70,6 @@ async function loadVideo(url: string) {
   dom.video.height = dom.video.videoHeight;
   dom.output.width = dom.video.width;
   dom.output.height = dom.video.height;
-  // dom.output.style.height = 'auto';
   dom.status.innerText = '';
   log(`video | ${url} | resolution: ${dom.video.videoWidth} x ${dom.video.videoHeight} | duration: ${Math.trunc(dom.video.duration)}`);
 }
@@ -95,7 +91,6 @@ async function loadImage(url: string) {
   dom.image.height = dom.image.naturalHeight;
   dom.output.width = dom.image.width;
   dom.output.height = dom.image.height;
-  // dom.output.style.height = 'auto';
   let poses = '';
   if (json) for (const box of json.boxes[0]) poses += Math.round(1000 * box[4]) / 10 + '% ';
   log(`image | ${url} | resolution: ${dom.image.naturalWidth} x ${dom.image.naturalHeight} | poses: ${poses}`);
@@ -189,7 +184,7 @@ async function enumerateInputs() {
     if (dom.sample.options.selectedIndex > 0) await refresh();
   };
   dom.bone.onchange = async () => {
-    if (json && json.options.image) await refresh();
+    if (json && json.options.image) await refresh(); // force refresh for image as for video it will happen anyhow on next frame
   };
   dom.model.onchange = async () => {
     if (json && json.options.image) await refresh();
@@ -203,6 +198,7 @@ async function enumerateInputs() {
 async function main() {
   dom.status.innerText = 'ready...';
   await enumerateInputs();
+  dom.sample.focus();
 }
 
 window.onload = main;

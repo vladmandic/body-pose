@@ -27,10 +27,11 @@ export class PoseScene {
   constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number) {
     this.canvas = outputCanvas;
     // engine & scene
-    this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
-    // this.engine.enableOfflineSupport = false;
+    this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false, doNotHandleContextLost: true });
+    this.engine.enableOfflineSupport = false;
     BABYLON.Animation.AllowMatricesInterpolation = true;
     this.scene = new BABYLON.Scene(this.engine);
+    this.scene.clearCachedVertexData();
     this.materialBody = new BABYLON.StandardMaterial('materialTube', this.scene);
     this.materialBody.diffuseColor = new BABYLON.Color3(0.0, 0.6, 0.6);
     this.materialBody.alpha = 1.0;
@@ -46,7 +47,7 @@ export class PoseScene {
     // camera
     if (this.camera) this.camera.dispose();
     this.camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, cameraRadius, new BABYLON.Vector3(0.5, 0.5, 0.5), this.scene);
-    this.camera.attachControl(this.canvas, true);
+    this.camera.attachControl(this.canvas, false);
     this.camera.lowerRadiusLimit = 0.001;
     this.camera.upperRadiusLimit = 50;
     this.camera.wheelDeltaPercentage = 0.01;
@@ -60,7 +61,7 @@ export class PoseScene {
       createGround: true,
       skyboxTexture: '../assets/skybox',
       skyboxColor: new BABYLON.Color3(0.7, 0.9, 1.0),
-      skyboxSize: 15,
+      skyboxSize: 25,
       cameraContrast: 2,
       cameraExposure: 1,
       groundColor: new BABYLON.Color3(0.3, 0.3, 0.3), // new BABYLON.Color3(0.0, 0.3, 0.5),
@@ -69,7 +70,6 @@ export class PoseScene {
       groundTexture: '../assets/ground.png',
       enableGroundShadow: true,
       enableGroundMirror: false,
-      // skyboxSize: 100,
       environmentTexture: '../assets/environment.env',
     }) as BABYLON.EnvironmentHelper;
     // lights
