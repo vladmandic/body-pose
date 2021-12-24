@@ -2,8 +2,9 @@ export const samples = [
   '',
   // images
   '../media/Fitness.jpg.json',
-  '../media/DancePose.jpg.json',
+  '../media/YogaPose.jpg.json',
   '../media/YogaGroupPose.jpg.json',
+  '../media/DancePose.jpg.json',
   '../media/FootballCatch.jpg.json',
   '../media/FootballRun.jpg.json',
   '../media/BaseballHit.jpg.json',

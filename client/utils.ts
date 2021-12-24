@@ -2,6 +2,29 @@ import * as BABYLON from 'babylonjs';
 import type { Point3D, Pose } from './types';
 import type { PoseScene } from './scene';
 
+export const dom = { // pointers to dom objects
+  video: document.getElementById('input-video') as HTMLVideoElement,
+  image: document.getElementById('input-image') as HTMLImageElement,
+  status: document.getElementById('status') as HTMLPreElement,
+  log: document.getElementById('log') as HTMLPreElement,
+  output: document.getElementById('output') as HTMLCanvasElement,
+  sample: document.getElementById('input') as HTMLSelectElement,
+  skeleton: document.getElementById('skeleton') as HTMLSelectElement,
+  model: document.getElementById('model') as HTMLSelectElement,
+  split: document.getElementById('split') as HTMLInputElement,
+  options: document.getElementById('options') as HTMLDivElement,
+  animate: document.getElementById('animate') as HTMLButtonElement,
+  center: document.getElementById('center') as HTMLButtonElement,
+  bone: document.getElementById('bone') as HTMLInputElement,
+  joint: document.getElementById('joint') as HTMLInputElement,
+};
+
+export const log = (...msg: unknown[]) => {
+  dom.log.innerText += msg.join(' ') + '\n';
+  dom.log.scrollTop = dom.log.scrollHeight;
+  console.log(...msg);
+};
+
 export function maxmin(poses: Pose[][]): { max: [number, number, number], min: [number, number, number] } {
   const min: Point3D = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
   const max: Point3D = [Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
@@ -86,7 +109,11 @@ export const angles = (pt0: Point3D, pt1: Point3D, pt2: Point3D): BABYLON.Vector
 
 export async function attachControls(poseScene: PoseScene) {
   const ground = poseScene.scene.meshes.find((mesh) => mesh.name === 'BackgroundPlane');
+  if (ground) ground!.isPickable = false;
   const skybox = poseScene.scene.meshes.find((mesh) => mesh.name === 'BackgroundSkybox');
+  if (skybox) skybox!.isPickable = false;
+  const skin = poseScene.scene.meshes.find((mesh) => mesh.name === 'mixamorig:Skin');
+  if (skin) skin!.isPickable = false;
   poseScene.scene.onPointerObservable.add((pointerInfo) => {
     const getGroundPosition = () => {
       const pickinfo = poseScene.scene.pick(poseScene.scene.pointerX, poseScene.scene.pointerY, (mesh) => mesh === ground);
@@ -106,15 +133,15 @@ export async function attachControls(poseScene: PoseScene) {
     };
 
     const pointerMove = () => {
-      const pickinfo = poseScene.scene.pick(poseScene.scene.pointerX, poseScene.scene.pointerY, (mesh) => (mesh !== ground && mesh !== skybox));
+      const pickinfo = poseScene.scene.pick(poseScene.scene.pointerX, poseScene.scene.pointerY, (mesh) => (mesh !== ground && mesh !== skybox && mesh !== skin));
       if (pickinfo && pickinfo.hit) {
         if (pickinfo.pickedMesh !== poseScene.hoverMesh) {
           poseScene.hoverMesh = pickinfo.pickedMesh as BABYLON.Mesh;
           poseScene.highlight.removeAllMeshes();
           poseScene.highlight.addMesh(poseScene.hoverMesh, BABYLON.Color3.Black(), true);
-          console.log(poseScene.hoverMesh.name);
-        } else {
-          //
+          const position = [];
+          if (poseScene.hoverMesh.position.x !== 0) position.push(poseScene.hoverMesh.position.x.toFixed(2), poseScene.hoverMesh.position.y.toFixed(2), poseScene.hoverMesh.position.z.toFixed(2));
+          dom.status.innerText = `${poseScene.hoverMesh.name}: ${position.join(',')}`;
         }
       } else {
         if (poseScene.hoverMesh) {
@@ -132,7 +159,10 @@ export async function attachControls(poseScene: PoseScene) {
 
     switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERDOWN:
-        if (pointerInfo.pickInfo && pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh !== ground) pointerDown(pointerInfo.pickInfo.pickedMesh as BABYLON.Mesh);
+        if (pointerInfo.pickInfo && pointerInfo.pickInfo.hit
+          && pointerInfo.pickInfo.pickedMesh !== ground
+          // && pointerInfo.pickInfo.pickedMesh !== skybox
+          && pointerInfo.pickInfo.pickedMesh !== skin) pointerDown(pointerInfo.pickInfo.pickedMesh as BABYLON.Mesh);
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
         pointerUp();

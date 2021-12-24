@@ -24,9 +24,9 @@
   <body>
     <pre id="status" style="position: absolute; top: 12px; right: 20px; background-color: grey; padding: 8px; box-shadow: 2px 2px black; cursor: crosshair"></pre>
     <div id="media" style="display: flex; overflow: hidden; max-height: 80vh;">
-      <video id="input-video" alt="video-input" style="width: 50%; height: fit-content; display: none" autoplay loop muted controlslist="nofullscreen nodownload noremoteplayback" disablepictureinpicture></video>
-      <img id="input-image" alt="video-input" style="width: 50%; height: fit-content; display: none">
-      <canvas id="output" style="width: 50%; height: fit-content; display: none"></canvas>
+      <video id="input-video" alt="video-input" style="width: 50%; max-height: 80vh; object-fit: contain; height: fit-content; display: none" autoplay loop muted controlslist="nofullscreen nodownload noremoteplayback" disablepictureinpicture></video>
+      <img id="input-image" alt="video-input" style="width: 50%; max-height: 80vh; object-fit: contain; height: fit-content; display: none">
+      <canvas id="output" style="width: 50%; max-height: 80vh; height: fit-content; display: none"></canvas>
     </div>
     <div>
       <input type="range" id="split" name="split" min="0" max="100" value="50" step="1" style="width: 100vw; display: none; margin-bottom: 16px">

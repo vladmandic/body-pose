@@ -1,34 +1,11 @@
 import * as mesh from './mesh';
 import * as avatar from './avatar';
 import type { Result } from './types';
-import * as utils from './utils';
+import { dom, log, normalize, centerCamera } from './utils';
 import { skeletons } from './constants';
 import { samples } from './samples';
 
 let json: Result = null;
-
-const dom = { // pointers to dom objects
-  video: document.getElementById('input-video') as HTMLVideoElement,
-  image: document.getElementById('input-image') as HTMLImageElement,
-  status: document.getElementById('status') as HTMLPreElement,
-  log: document.getElementById('log') as HTMLPreElement,
-  output: document.getElementById('output') as HTMLCanvasElement,
-  sample: document.getElementById('input') as HTMLSelectElement,
-  skeleton: document.getElementById('skeleton') as HTMLSelectElement,
-  model: document.getElementById('model') as HTMLSelectElement,
-  split: document.getElementById('split') as HTMLInputElement,
-  options: document.getElementById('options') as HTMLDivElement,
-  animate: document.getElementById('animate') as HTMLButtonElement,
-  center: document.getElementById('center') as HTMLButtonElement,
-  bone: document.getElementById('bone') as HTMLInputElement,
-  joint: document.getElementById('joint') as HTMLInputElement,
-};
-
-const log = (...msg: unknown[]) => {
-  dom.log.innerText += msg.join(' ') + '\n';
-  dom.log.scrollTop = dom.log.scrollHeight;
-  console.log(...msg);
-};
 
 let lastFrame = 0;
 async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
@@ -124,7 +101,7 @@ async function processInput(url: string) {
   }
   json = await res.json();
   if (!json) return;
-  json.poses = await utils.normalize(json.poses, json.resolution[0]); // normalize after we have output canvas resized
+  json.poses = await normalize(json.poses, json.resolution[0]); // normalize after we have output canvas resized
   log(`input | ${res.url}`);
   json.options.skeleton = json.options.skeleton === '' ? 'all' : json.options.skeleton.replace('+', '_');
   const options = {
@@ -197,7 +174,7 @@ async function enumerateInputs() {
   dom.center.onclick = () => {
     if (!json) return;
     const scene = dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.getScene() : avatar.getScene();
-    if (scene) utils.centerCamera(scene.camera, 500, json.poses);
+    if (scene) centerCamera(scene.camera, 500, json.poses);
   };
 }
 

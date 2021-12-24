@@ -74,9 +74,9 @@ export const skeletons: Record<string, Skeleton> = {
 
 export const maps = {
   ybot: [ // ybot bones are hierarchical vectors defined by relative position, rotation and scale
-    /* 00 */ 'Hips', /* 01 */ 'Spine', /* 02 */ 'Spine1', /* 03 */ 'Spine2', /* 04 */ 'Neck', /* 05 */ 'Head', /* 06 */ 'LeftEye', /* 07 */ 'RightEye', /* 08 */ 'LeftShoulder',
-    /* 09 */ 'LeftArm', /* 10 */ 'LeftForeArm', /* 11 */ 'LeftHand', /* 12 */ 'RightShoulder', /* 13 */ 'RightArm', /* 14 */ 'RightForeArm', /* 15 */ 'RightHand', /* 16 */ 'RightUpLeg',
-    /* 17 */ 'RightLeg', /* 18 */ 'RightFoot', /* 19 */ 'RightToeBase', /* 20 */ 'LeftUpLeg', /* 21 */ 'LeftLeg', /* 22 */ 'LeftFoot', /* 23 */ 'LeftToeBase',
+    /* 00 */ 'Hips', /* 01 */ 'Spine', /* 02 */ 'Spine1', /* 03 */ 'Spine2', /* 04 */ 'Neck', /* 05 */ 'Head', /* 06 */ 'LeftEye', /* 07 */ 'RightEye',
+    /* 08 */ 'LeftShoulder', /* 09 */ 'LeftArm', /* 10 */ 'LeftForeArm', /* 11 */ 'LeftHand', /* 12 */ 'RightShoulder', /* 13 */ 'RightArm', /* 14 */ 'RightForeArm', /* 15 */ 'RightHand',
+    /* 16 */ 'RightUpLeg', /* 17 */ 'RightLeg', /* 18 */ 'RightFoot', /* 19 */ 'RightToeBase', /* 20 */ 'LeftUpLeg', /* 21 */ 'LeftLeg', /* 22 */ 'LeftFoot', /* 23 */ 'LeftToeBase',
     // also part of general skeleton definition but currently not used
     // 'LeftHandMiddle1', 'LeftHandMiddle2', 'LeftHandMiddle3', 'LeftHandMiddle4', 'LeftHandThumb1', 'LeftHandThumb2', 'LeftHandThumb3', 'LeftHandThumb4', 'LeftHandIndex1', 'LeftHandIndex2',
     // 'LeftHandIndex3', 'LeftHandIndex4', 'LeftHandRing1', 'LeftHandRing2', 'LeftHandRing3', 'LeftHandRing4', 'LeftHandPinky1', 'LeftHandPinky2', 'LeftHandPinky3', 'LeftHandPinky4',
