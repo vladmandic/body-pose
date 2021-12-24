@@ -89,4 +89,5 @@ export const maps = {
     /* 10 */ 'ltoe_smpl', /* 11 */ 'rtoe_smpl', /* 12 */ 'neck_smpl', /* 13 */ 'lcla_smpl', /* 14 */ 'rcla_smpl', /* 15 */ 'head_smpl', /* 16 */ 'lsho_smpl', /* 17 */ 'rsho_smpl', /* 18 */ 'lelb_smpl', /* 19 */ 'relb_smpl',
     /* 20 */ 'lwri_smpl', /* 21 */ 'rwri_smpl', /* 22 */ 'lhan_smpl', /* 23 */ 'rhan_smpl', /* 24 */ 'htop_mpi_inf_3dhp', /* 25 */ 'learcoco', /* 26 */ 'leyecoco', /* 27 */ 'nosecoco', /* 28 */ 'rearcoco', /* 29 */ 'reyecoco',
   ],
+  smpl2ybot: [],
 };

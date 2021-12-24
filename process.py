@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from distutils.util import strtobool
-import tensorflow.python.platform.build_info as build
 import matplotlib
 
 class JSON:
@@ -40,11 +39,14 @@ def loadModel():
   global model
   # os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # disable cuda
   os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # reduce tf logging
-  print('loaded tensorflow', tf.version.VERSION)
+  print('loaded tensorflow:', tf.version.VERSION)
+  sysconfig = tf.sysconfig.get_build_info()
+  print('cuda:', sysconfig["cuda_version"], 'cudnn:', sysconfig["cudnn_version"], 'cuda build:', sysconfig["is_cuda_build"], 'tensorrt:', sysconfig["is_tensorrt_build"])
+  print('cpu devices:', tf.config.list_physical_devices('CPU'))
+  print('gpu devices:', tf.config.list_physical_devices('GPU'))
   if len(tf.config.list_physical_devices('GPU')) < 1:
     print('no gpu devices found')
-    exit(0)    
-  print('loaded cuda', build.build_info['cuda_version'])
+    exit(0)
   t0 = now()
   model = tf.saved_model.load(args.model)
   print('loaded model:', args.model, 'in {:.1f}sec'.format(now() - t0))

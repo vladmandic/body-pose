@@ -23,8 +23,12 @@ export class PoseScene {
   skybox: BABYLON.Mesh | undefined;
   ground: BABYLON.Mesh | undefined;
   skeleton?: BABYLON.Skeleton | undefined;
+  highlight: BABYLON.HighlightLayer;
+  currentMesh: BABYLON.Nullable<BABYLON.Mesh> = null;
+  hoverMesh: BABYLON.Nullable<BABYLON.Mesh> = null;
+  pointerPosition: BABYLON.Nullable<BABYLON.Vector3> = null;
 
-  constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number) {
+  constructor(outputCanvas: HTMLCanvasElement, cameraRadius: number, introDurationMs: number) {
     this.canvas = outputCanvas;
     // engine & scene
     this.engine = new BABYLON.Engine(this.canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false, doNotHandleContextLost: true });
@@ -40,6 +44,7 @@ export class PoseScene {
     this.materialHead.diffuseColor = new BABYLON.Color3(0.6, 1.0, 1.0);
     this.materialHead.specularColor = new BABYLON.Color3(0.6, 1.0, 1.0);
     this.materialHead.specularPower = 0;
+    this.highlight = new BABYLON.HighlightLayer('highlight', this.scene);
     // start scene
     this.engine.runRenderLoop(() => this.scene.render());
     window.engine = this.engine;
@@ -90,13 +95,13 @@ export class PoseScene {
     window.meshes = this.scene.meshes;
     window.camera = this.camera;
     // animate
-    this.intro();
+    if (introDurationMs > 0) this.intro(introDurationMs);
   }
 
-  intro() {
-    BABYLON.Animation.CreateAndStartAnimation('camera', this.camera, 'fov', /* FPS */ 60, /* frames */ 120, /* start */ 1.0, /* end */ 0.1, /* loop */ 0, new BABYLON.BackEase());
-    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', /* FPS */ 20, /* frames */ 80, /* start */ -0.6, /* end */ 0.3, /* loop */ 0, new BABYLON.CircleEase());
-    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', /* FPS */ 25, /* frames */ 100, /* start */ -0.1, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
+  intro(ms: number) {
+    BABYLON.Animation.CreateAndStartAnimation('camera', this.camera, 'fov', 60, 60 * ms / 1000, /* start */ 1.0, /* end */ 0.1, /* loop */ 0, new BABYLON.BackEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.x', 60, 60 * ms / 1000, /* start */ -0.6, /* end */ 0.3, /* loop */ 0, new BABYLON.CircleEase());
+    BABYLON.Animation.CreateAndStartAnimation('light', this.light, 'direction.y', 60, 60 * ms / 1000, /* start */ -0.1, /* end */ -0.5, /* loop */ 0, new BABYLON.CircleEase());
   }
 
   inspector() {

@@ -133,42 +133,32 @@ async function points(poses: Pose[], joints: Joint[]) {
   }
 }
 
-export async function animate(sec: number) {
+export async function demoAnimate(sec: number) {
   if (!t) return;
-  const alpha = t.camera.alpha;
-  const beta = t.camera.beta;
-  const radius = t.camera.radius;
-  const target = { x: t.camera.target.x, y: t.camera.target.y, z: t.camera.target.z };
   const moveTarget = (x: number, y: number, z: number, ms: number) => {
-    if (!t) return;
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'target.x', 60, 60 * ms / 1000, t.camera.target.x, x, 0, new BABYLON.BackEase());
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'target.y', 60, 60 * ms / 1000, t.camera.target.y, y, 0, new BABYLON.BackEase());
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'target.z', 60, 60 * ms / 1000, t.camera.target.z, z, 0, new BABYLON.BackEase());
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'target.x', 60, 60 * ms / 1000, t!.camera.target.x, x, 0, new BABYLON.BackEase());
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'target.y', 60, 60 * ms / 1000, t!.camera.target.y, y, 0, new BABYLON.BackEase());
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'target.z', 60, 60 * ms / 1000, t!.camera.target.z, z, 0, new BABYLON.BackEase());
   };
   const zoomCamera = (ms: number) => {
-    if (!t) return;
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'radius', 60, 60 * ms / 1000 / 3, t.camera.radius, 2.0 * radius, 0, new BABYLON.ElasticEase(), () => {
-      if (!t) return;
-      BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'radius', 60, 60 * ms / 1000 / 3, t.camera.radius, 0.5 * radius, 0, new BABYLON.ElasticEase(), () => {
-        if (!t) return;
-        BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'radius', 60, 60 * ms / 1000 / 3, t.camera.radius, 1.0 * radius, 0, new BABYLON.ElasticEase());
+    const radius = t!.camera.radius;
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'radius', 60, 60 * ms / 1000 / 3, t!.camera.radius, 2.0 * radius, 0, new BABYLON.ElasticEase(), () => {
+      BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'radius', 60, 60 * ms / 1000 / 3, t!.camera.radius, 0.5 * radius, 0, new BABYLON.ElasticEase(), () => {
+        BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'radius', 60, 60 * ms / 1000 / 3, t!.camera.radius, 1.0 * radius, 0, new BABYLON.ElasticEase());
       });
     });
   };
   const rotateAlpha = (ms: number) => {
-    if (!t) return;
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'alpha', 60, 60 * ms / 1000 / 2, alpha, 2 * Math.PI + alpha, 0, new BABYLON.BackEase(), () => {
-      if (!t) return;
-      BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'alpha', 60, 60 * ms / 1000 / 2, t.camera.alpha, alpha, 0, new BABYLON.BackEase());
+    const alpha = t!.camera.alpha;
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'alpha', 60, 60 * ms / 1000 / 2, alpha, 2 * Math.PI + alpha, 0, new BABYLON.BackEase(), () => {
+      BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'alpha', 60, 60 * ms / 1000 / 2, t!.camera.alpha, alpha, 0, new BABYLON.BackEase());
     });
   };
   const rotateBeta = (ms: number) => {
-    if (!t) return;
-    BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'beta', 60, 60 * ms / 1000 / 3, beta, 3 * Math.PI / 4, 0, new BABYLON.BackEase(), () => {
-      if (!t) return;
-      BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'beta', 60, 60 * ms / 1000 / 3, t.camera.beta, Math.PI / 4, 0, new BABYLON.BackEase(), () => {
-        if (!t) return;
-        BABYLON.Animation.CreateAndStartAnimation('camera', t.camera, 'beta', 60, 60 * ms / 1000 / 3, t.camera.beta, beta, 0, new BABYLON.BackEase());
+    const beta = t!.camera.beta;
+    BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'beta', 60, 60 * ms / 1000 / 3, beta, 3 * Math.PI / 4, 0, new BABYLON.BackEase(), () => {
+      BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'beta', 60, 60 * ms / 1000 / 3, t!.camera.beta, Math.PI / 4, 0, new BABYLON.BackEase(), () => {
+        BABYLON.Animation.CreateAndStartAnimation('camera', t!.camera, 'beta', 60, 60 * ms / 1000 / 3, t!.camera.beta, beta, 0, new BABYLON.BackEase());
       });
     });
   };
@@ -177,6 +167,7 @@ export async function animate(sec: number) {
   const durationZoom = unit * Math.random() + (4 * unit);
   const durationAlpha = unit * Math.random() + (4 * unit);
   const durationBeta = unit * Math.random() + (4 * unit);
+  const target = { x: t.camera.target.x, y: t.camera.target.y, z: t.camera.target.z };
   setTimeout(() => moveTarget(avg(centers.x), avg(centers.y), Math.max(...centers.z), durationTarget), 0);
   setTimeout(() => zoomCamera(durationZoom), durationTarget);
   setTimeout(() => rotateAlpha(durationAlpha), durationTarget);
@@ -202,8 +193,10 @@ export async function draw(json: Result, frame: null | number, canvas: HTMLCanva
   if (!json || frame === null) return;
   if (!t || t.scene.isDisposed) {
     const fov = utils.fov(json.poses);
-    t = new PoseScene(canvas, fov); // create new scene
+    t = new PoseScene(canvas, fov, 1000); // create new scene
   }
-  body(frame, json.poses, json.edges, json.joints, skeleton);
-  if (numberedJoints) points(json.poses[frame], json.joints);
+  body(frame, json.poses, json.edges, json.joints, skeleton); // draw body
+  if (numberedJoints) points(json.poses[frame], json.joints); // add numbered joints
+  setTimeout(() => utils.centerCamera((t as PoseScene).camera, 1000, json.poses), 1000);
+  utils.attachControls(t);
 }

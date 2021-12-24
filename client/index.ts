@@ -193,14 +193,11 @@ async function enumerateInputs() {
   dom.joint.onchange = async () => {
     if (json && json.options.image) await refresh();
   };
-  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.animate(15) : avatar.animate());
+  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.demoAnimate(15) : avatar.animate());
   dom.center.onclick = () => {
     if (!json) return;
-    const maxmin = utils.maxmin(json.poses);
     const scene = dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.getScene() : avatar.getScene();
-    const position = { x: (maxmin.max[0] - maxmin.min[0]) / 2 + maxmin.min[0], y: (maxmin.max[1] - maxmin.min[1]) / 2, z: (maxmin.max[2] - maxmin.min[2]) / 2 };
-    const target = { x: 0, y: 2, z: -12 };
-    if (scene) utils.moveCamera(scene.camera, 500, position, target);
+    if (scene) utils.centerCamera(scene.camera, 500, json.poses);
   };
 }
 

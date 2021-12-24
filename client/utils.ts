@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import type { Point3D, Pose } from './types';
+import type { PoseScene } from './scene';
 
 export function maxmin(poses: Pose[][]): { max: [number, number, number], min: [number, number, number] } {
   const min: Point3D = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
@@ -39,17 +40,19 @@ export function fov(poses: Pose[][]): number {
 }
 
 export function moveCamera(camera: BABYLON.ArcRotateCamera, ms: number, target: { x: number, y: number, z: number }, position: { x: number, y: number, z: number }) {
-  console.log({ position, target });
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.x', 60, 60 * ms / 1000, camera.target.x, target.x, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.y', 60, 60 * ms / 1000, camera.target.y, target.y, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.z', 60, 60 * ms / 1000, camera.target.z, target.z, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.x', 60, 60 * ms / 1000, camera.position.x, position.x, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.y', 60, 60 * ms / 1000, camera.position.y, position.y, 0, new BABYLON.BackEase());
-  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.z', 60, 60 * ms / 1000, camera.position.z, position.z, 0, new BABYLON.BackEase());
-  setTimeout(() => {
-    camera.target = new BABYLON.Vector3(target.x, target.y, target.z);
-    camera.position = new BABYLON.Vector3(position.x, position.y, position.z);
-  }, 25 + ms / 1000);
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.x', 60, 60 * ms / 1000, camera.target.x, target.x, 0, new BABYLON.SineEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.y', 60, 60 * ms / 1000, camera.target.y, target.y, 0, new BABYLON.SineEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'target.z', 60, 60 * ms / 1000, camera.target.z, target.z, 0, new BABYLON.SineEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.x', 60, 60 * ms / 1000, camera.position.x, position.x, 0, new BABYLON.SineEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.y', 60, 60 * ms / 1000, camera.position.y, position.y, 0, new BABYLON.SineEase());
+  BABYLON.Animation.CreateAndStartAnimation('camera', camera, 'position.z', 60, 60 * ms / 1000, camera.position.z, position.z, 0, new BABYLON.SineEase());
+}
+
+export function centerCamera(camera: BABYLON.ArcRotateCamera, ms: number, poses: Pose[][]) {
+  const range = maxmin(poses);
+  const position = { x: (range.max[0] - range.min[0]) / 2 + range.min[0], y: (range.max[1] - range.min[1]) / 2, z: (range.max[2] - range.min[2]) / 2 };
+  const target = { x: 0, y: 2, z: -12 };
+  moveCamera(camera, ms, position, target);
 }
 
 export const angles = (pt0: Point3D, pt1: Point3D, pt2: Point3D): BABYLON.Vector3 => {
@@ -80,3 +83,64 @@ export const angles = (pt0: Point3D, pt1: Point3D, pt2: Point3D): BABYLON.Vector
   const roll = 2 * -thetaZ;
   return new BABYLON.Vector3(pitch, yaw, roll);
 };
+
+export async function attachControls(poseScene: PoseScene) {
+  const ground = poseScene.scene.meshes.find((mesh) => mesh.name === 'BackgroundPlane');
+  const skybox = poseScene.scene.meshes.find((mesh) => mesh.name === 'BackgroundSkybox');
+  poseScene.scene.onPointerObservable.add((pointerInfo) => {
+    const getGroundPosition = () => {
+      const pickinfo = poseScene.scene.pick(poseScene.scene.pointerX, poseScene.scene.pointerY, (mesh) => mesh === ground);
+      if (pickinfo && pickinfo.hit) return pickinfo.pickedPoint;
+      return null;
+    };
+
+    const pointerDown = (mesh: BABYLON.Mesh) => {
+      poseScene.currentMesh = mesh;
+      poseScene.pointerPosition = getGroundPosition();
+      if (poseScene.pointerPosition) poseScene.camera.detachControl(poseScene.canvas);
+    };
+
+    const pointerUp = () => {
+      if (poseScene.pointerPosition) poseScene.camera.attachControl(poseScene.canvas, true);
+      poseScene.pointerPosition = null;
+    };
+
+    const pointerMove = () => {
+      const pickinfo = poseScene.scene.pick(poseScene.scene.pointerX, poseScene.scene.pointerY, (mesh) => (mesh !== ground && mesh !== skybox));
+      if (pickinfo && pickinfo.hit) {
+        if (pickinfo.pickedMesh !== poseScene.hoverMesh) {
+          poseScene.hoverMesh = pickinfo.pickedMesh as BABYLON.Mesh;
+          poseScene.highlight.removeAllMeshes();
+          poseScene.highlight.addMesh(poseScene.hoverMesh, BABYLON.Color3.Black(), true);
+          console.log(poseScene.hoverMesh.name);
+        } else {
+          //
+        }
+      } else {
+        if (poseScene.hoverMesh) {
+          poseScene.highlight.removeMesh(poseScene.hoverMesh);
+          poseScene.hoverMesh = null;
+        }
+      }
+      if (!poseScene.pointerPosition || !poseScene.currentMesh) return;
+      const currentPosition = getGroundPosition();
+      if (!currentPosition) return;
+      const diff = currentPosition.subtract(poseScene.pointerPosition);
+      poseScene.currentMesh.position.addInPlace(diff);
+      poseScene.pointerPosition = currentPosition;
+    };
+
+    switch (pointerInfo.type) {
+      case BABYLON.PointerEventTypes.POINTERDOWN:
+        if (pointerInfo.pickInfo && pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh !== ground) pointerDown(pointerInfo.pickInfo.pickedMesh as BABYLON.Mesh);
+        break;
+      case BABYLON.PointerEventTypes.POINTERUP:
+        pointerUp();
+        break;
+      case BABYLON.PointerEventTypes.POINTERMOVE:
+        pointerMove();
+        break;
+      default:
+    }
+  });
+}
