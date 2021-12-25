@@ -1,13 +1,17 @@
 import * as BABYLON from 'babylonjs';
+import { VRMManager, VRMFileLoader } from 'babylon-vrm-loader';
 import 'babylonjs-inspector';
 import { PoseScene } from './scene';
 import { fov, attachControls, centerCamera } from './utils';
+// import * as calc from './calc';
+import Vector from './vector';
 import type { Result, Pose, Point3D } from './types';
 
 let t: PoseScene | null;
 let skeletons: Array<BABYLON.Skeleton | null> = [];
 
 const config = {
+  modelUrl: 'ybot.babylon',
   showAnchors: true,
   position: false,
   rotation: false,
@@ -17,29 +21,37 @@ const config = {
 };
 
 export const getScene = () => t;
-const getBone = (skeleton: BABYLON.Skeleton, name: string): (BABYLON.Bone | undefined) => skeleton?.bones.find((bone) => bone.name === name) as BABYLON.Bone;
 
 export async function loadSkeleton(person: number): Promise<BABYLON.Skeleton> {
-  const modelUrl = 'ybot.babylon';
   return new Promise((resolve) => {
-    BABYLON.SceneLoader.ImportMesh('', '../assets/', modelUrl, t ? t.scene as BABYLON.Scene : null, (_skeletonMeshes, _skeletonParticles, skeleton) => {
-      if (t && skeleton && skeleton.length > 0) {
-        skeletons[person] = skeleton[0];
-        skeletons[person]!.name = 'ybot' + person;
-        skeletons[person]!.bones.forEach((bone) => { bone.name = bone.name.replace('mixamorig:', ''); }); // remap names from ybot
-        skeletons[person]!.returnToRest();
-        const ybot = t.scene.meshes.find((mesh) => (mesh.name === 'YBot') || (mesh.name === 'him')) as BABYLON.Mesh;
-        t.shadows.addShadowCaster(ybot, true);
-        const hips = getBone(skeleton[0], 'Hips') as BABYLON.Bone;
-        if (hips) hips.rotation = new BABYLON.Vector3(0, Math.PI, 0); // rotate to face camera
-        // debug view
-        // const skeletonViewer = new BABYLON.SkeletonViewer(skeleton[0], _skeletonMeshes[0], t.scene);
-        // skeletonViewer.displayMode = BABYLON.SkeletonViewer.DISPLAY_SPHERE_AND_SPURS;
-        // skeletonViewer.update();
-        // skeletonViewer.color = BABYLON.Color3.Green();
-        resolve(skeleton[0]);
-      }
-    });
+    if (config.modelUrl.endsWith('.babylon')) {
+      BABYLON.SceneLoader.ImportMesh('', '../assets/', config.modelUrl, t ? t.scene as BABYLON.Scene : null, (mesh, _particle, skeleton) => {
+        if (t && skeleton && skeleton.length > 0) {
+          skeleton[0].name += skeleton[0].name + person;
+          skeleton[0].bones.forEach((bone) => { bone.name = bone.name.replace('mixamorig:', ''); }); // remap names from ybot
+          skeleton[0].returnToRest();
+          t.shadows.addShadowCaster(mesh[0], true);
+          // debug view
+          // const skeletonViewer = new BABYLON.SkeletonViewer(skeleton[0], skeletonMeshes[0], t.scene);
+          // skeletonViewer.displayMode = BABYLON.SkeletonViewer.DISPLAY_SPHERE_AND_SPURS;
+          // skeletonViewer.update();
+          // skeletonViewer.color = BABYLON.Color3.Green();
+          resolve(skeleton[0]);
+        }
+      });
+    }
+    if (config.modelUrl.endsWith('.vrm')) {
+      const onSuccess = (scene: BABYLON.Scene) => {
+        const vrmManager: VRMManager = scene.metadata.vrmManagers[0];
+        console.log('VRM Loaded', vrmManager);
+        // resolve(vrmManager);
+      };
+      const onProgress = (evt: BABYLON.ISceneLoaderProgressEvent) => console.log('VRM Loading:', evt.loaded);
+      const onError = (_scene: BABYLON.Scene, err: string) => console.log('VRM Error:', err);
+      // BABYLON.SceneLoader.RegisterPlugin(new GLTFFileLoader());
+      BABYLON.SceneLoader.RegisterPlugin(new VRMFileLoader() as unknown as BABYLON.ISceneLoaderPlugin);
+      BABYLON.SceneLoader.Append('../assets/', config.modelUrl, t!.scene, onSuccess, onProgress, onError);
+    }
   });
 }
 
@@ -63,13 +75,9 @@ async function body(frame: number, poses: Pose[][]) {
     };
 
     const rotate = () => {
-      // const radians = (a1: number, a2: number, b1: number, b2: number) => Math.atan2(b2 - a2, b1 - a1);
-      const bone = skeletons[person]!.bones.find((b) => b.name === 'Hips') as BABYLON.Bone;
-      const x = 0;
-      const y = 0;
-      const z = 0;
-      bone.setRotation(new BABYLON.Vector3(0, Math.PI, 0));
-      console.log({ x, y, z });
+      const hips = skeletons[person]!.bones.find((b) => b.name === 'Hips') as BABYLON.Bone;
+      const angle = Vector.rollPitchYaw(new Vector(pose[1]), new Vector(pose[2]));
+      hips.setYawPitchRoll(angle.z, angle.y, angle.x);
     };
 
     const ik = (boneName: string, target: Point3D, poleTarget: Point3D) => {

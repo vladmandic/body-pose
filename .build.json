@@ -31,8 +31,8 @@
     "global": {
       "target": "esnext",
       "sourcemap": true,
-      "treeShaking": true,
-      "ignoreAnnotations": false,
+      "treeShaking": false,
+      "ignoreAnnotations": true,
       "minify": false,
       "banner": { "js": "/*\n  Human: Pose Analytics Demo\n  author: <https://github.com/vladmandic>'\n*/\n" }
     },
