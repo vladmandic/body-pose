@@ -1,4 +1,4 @@
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from '@babylonjs/core';
 import type { Point3D, Pose } from './types';
 import type { PoseScene } from './scene';
 
@@ -10,7 +10,6 @@ export const dom = { // pointers to dom objects
   output: document.getElementById('output') as HTMLCanvasElement,
   sample: document.getElementById('input') as HTMLSelectElement,
   skeleton: document.getElementById('skeleton') as HTMLSelectElement,
-  model: document.getElementById('model') as HTMLSelectElement,
   split: document.getElementById('split') as HTMLInputElement,
   options: document.getElementById('options') as HTMLDivElement,
   animate: document.getElementById('animate') as HTMLButtonElement,

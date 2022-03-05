@@ -1,5 +1,4 @@
 import * as mesh from './mesh';
-import * as avatar from './avatar';
 import type { Result } from './types';
 import { dom, log, normalize, centerCamera } from './utils';
 import { skeletons } from './constants';
@@ -12,8 +11,7 @@ async function render(_timestamp: number, _metadata?: Record<string, unknown>) {
   if (!json) return;
   if (json.options.image) {
     log('render | skeleton:', dom.skeleton.options[dom.skeleton.selectedIndex].value, '| joints:', skeletons[dom.skeleton.options[dom.skeleton.selectedIndex].value].joints.length, '| frames:', json.frames);
-    if (dom.model.options[dom.model.selectedIndex].value === 'avatar') await avatar.draw(json, 0, dom.output);
-    else await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
+    await mesh.draw(json, 0, dom.output, dom.skeleton.options[dom.skeleton.selectedIndex].value);
     dom.status.innerText = 'image';
   }
   if (json.options.video) {
@@ -124,7 +122,6 @@ async function processInput(url: string) {
   for (let i = 0; i < dom.skeleton.options.length; i++) {
     if (json.options.skeleton !== 'all' && dom.skeleton.options.item(i)?.outerText === json.options.skeleton) dom.skeleton.selectedIndex = i;
   }
-  await avatar.dispose();
   await mesh.dispose();
   if (json.options.image) await loadImage(json.options.image);
   if (json.options.video) await loadVideo(json.options.video);
@@ -136,7 +133,6 @@ async function processInput(url: string) {
 
 async function refresh() {
   await mesh.dispose();
-  await avatar.dispose();
   render(0);
 }
 
@@ -151,7 +147,7 @@ async function enumerateInputs() {
     const opt = (ev.target as HTMLSelectElement).options as HTMLOptionsCollection;
     if (opt[opt.selectedIndex].value && opt[opt.selectedIndex].value.length > 0) processInput(opt[opt.selectedIndex].value);
   };
-  dom.status.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.inspect() : avatar.inspect());
+  dom.status.onclick = () => mesh.inspect();
   dom.split.onchange = () => {
     const val = parseInt(dom.split.value);
     dom.video.style.width = `${100 - val}%`;
@@ -164,16 +160,13 @@ async function enumerateInputs() {
   dom.bone.onchange = async () => {
     if (json && json.options.image) await refresh(); // force refresh for image as for video it will happen anyhow on next frame
   };
-  dom.model.onchange = async () => {
-    if (json && json.options.image) await refresh();
-  };
   dom.joint.onchange = async () => {
     if (json && json.options.image) await refresh();
   };
-  dom.animate.onclick = () => (dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.demoAnimate(15) : avatar.animate());
+  dom.animate.onclick = () => mesh.demoAnimate(15);
   dom.center.onclick = () => {
     if (!json) return;
-    const scene = dom.model.options[dom.model.selectedIndex].value === 'mesh' ? mesh.getScene() : avatar.getScene();
+    const scene = mesh.getScene();
     if (scene) centerCamera(scene.camera, 500, json.poses);
   };
 }

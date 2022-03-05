@@ -3,8 +3,6 @@ export const samples = [
   // images
   '../media/Fitness.jpg.json',
   '../media/YogaPose.jpg.json',
-  '../media/YogaGroupPose.jpg.json',
-  '../media/DancePose.jpg.json',
   '../media/FootballCatch.jpg.json',
   '../media/FootballRun.jpg.json',
   '../media/BaseballHit.jpg.json',
@@ -13,15 +11,11 @@ export const samples = [
   '../media/BasketballDunk.jpg.json',
   '../media/Model.jpg.json',
   // videos
-  '../media/BaseballPitchSlowMo.webm.json',
   '../media/TennisSlowMo.webm.json',
   '../media/BasketballDunkSlowMo.webm.json',
-  '../media/DanceContemporary.webm.json',
-  '../media/DanceModern.webm.json',
   '../media/FloorGymnast.webm.json',
   '../media/RhythmicGymnasticsSlowMo01.webm.json',
   '../media/RhythmicGymnasticsSlowMo02.webm.json',
   '../media/RhythmicGymnasticsSlowMo03.webm.json',
-  // 'media/SoccerCompilation.webm.json',
   '../media/Test-SMPL.jpg.json',
 ];

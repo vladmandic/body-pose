@@ -17,19 +17,16 @@
   },
   "homepage": "https://github.com/vladmandic/human-pose#readme",
   "dependencies": {
-    "@babylonjs/core": "^4.2.0",
-    "@babylonjs/loaders": "^4.2.0",
-    "@babylonjs/materials": "^4.2.0",
-    "@vladmandic/build": "^0.6.6",
-    "babylon-mtoon-material": "^3.0.0",
-    "babylon-vrm-loader": "^1.5.0",
-    "babylonjs": "^4.2.0",
-    "babylonjs-inspector": "^4.2.0",
-    "babylonjs-loaders": "^4.2.0",
-    "eslint": "^8.5.0",
+    "@babylonjs/core": "^5.0.0-rc.0",
+    "@babylonjs/inspector": "^5.0.0-rc.0",
+    "@babylonjs/materials": "^5.0.0-rc.0",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.13",
+    "@vladmandic/build": "^0.7.0",
+    "eslint": "^8.10.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "^2.25.4",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.6.2"
   }
 }

@@ -1,5 +1,5 @@
-import * as BABYLON from 'babylonjs';
-import 'babylonjs-inspector';
+import * as BABYLON from '@babylonjs/core';
+import '@babylonjs/inspector';
 import { PoseScene } from './scene';
 import * as utils from './utils';
 import { skeletons, exclude } from './constants';
