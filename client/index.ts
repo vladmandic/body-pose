@@ -2,7 +2,7 @@ import * as mesh from './mesh';
 import type { Result } from './types';
 import { dom, log, normalize, centerCamera } from './utils';
 import { skeletons } from './constants';
-import { samples } from './samples';
+import { getSamples } from './samples';
 
 let json: Result = null;
 
@@ -91,7 +91,7 @@ async function enumerateSkeletons(skeleton: string) {
 
 async function processInput(url: string) {
   dom.status.innerText = 'loading data...';
-  const res = await fetch(url);
+  const res = await fetch(url + '.json');
   if (!res.ok) {
     log(`error loading: ${res.url} code: ${res.status} ${res.statusText !== '' ? 'error:' + res.statusText : ''}`);
     console.error(res);
@@ -123,8 +123,8 @@ async function processInput(url: string) {
     if (json.options.skeleton !== 'all' && dom.skeleton.options.item(i)?.outerText === json.options.skeleton) dom.skeleton.selectedIndex = i;
   }
   await mesh.dispose();
-  if (json.options.image) await loadImage(json.options.image);
-  if (json.options.video) await loadVideo(json.options.video);
+  if (json.options.image) await loadImage(url);
+  if (json.options.video) await loadVideo(url);
   enumerateSkeletons(json.options.skeleton);
   dom.split.style.display = 'block';
   dom.options.style.display = 'block';
@@ -137,6 +137,7 @@ async function refresh() {
 }
 
 async function enumerateInputs() {
+  const samples = await getSamples();
   for (const sample of samples) { // enumerate video samples
     const input = document.createElement('option');
     input.value = sample;

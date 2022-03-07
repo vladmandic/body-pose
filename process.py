@@ -7,8 +7,10 @@ import signal
 import cv2
 import numpy as np
 import tensorflow as tf
+from pathlib import Path
 from distutils.util import strtobool
 import matplotlib
+
 
 class JSON:
   def __init__(self):
@@ -58,13 +60,18 @@ def loadModel(args):
   gpuDevices = tf.config.list_physical_devices('GPU')
   if len(gpuDevices) < 1:
     print('error: no gpu devices found')
-    exit(0)
+    exit(1)
   for gpu in gpuDevices:
     print('gpu device:', gpu.name, tf.config.experimental.get_device_details(gpu)['device_name'])
   t0 = now()
-  model = tf.saved_model.load(args.model)
-  memory = tf.config.experimental.get_memory_info('GPU:0')
-  print('loaded model:', args.model, 'in {:.1f}sec'.format(now() - t0), 'memory ', memory['current'])
+  dir = Path(args.model)
+  if dir.is_dir():
+    model = tf.saved_model.load(args.model)
+    memory = tf.config.experimental.get_memory_info('GPU:0')
+    print('loaded model:', args.model, 'in {:.1f}sec'.format(now() - t0), 'memory ', memory['current'])
+  else:
+    print('model path invalid:', args.model)
+    exit(1)
 
 
 def round(x, decimals = 0):
@@ -145,7 +152,7 @@ def predictImage(args):
 def predictVideo(args):
   count = 0
   vidcap = cv2.VideoCapture(args.video)
-  print(' loaded video:', args.video, ' frames: {:.0f}'.format(res.frames), ' resolution: {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), 'x {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+  print(' loaded video:', args.video, ' frames: {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)), ' resolution: {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)), 'x {:.0f}'.format(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
   success, image = vidcap.read()
   t0 = now()
   res = JSON()
@@ -166,8 +173,12 @@ def predictVideo(args):
 def overrideProperties(args, job):
   if 'image' in job:
     args.image = job['image']
+  else:
+    args.image = None
   if 'video' in job:
     args.video = job['video']
+  else:
+    args.video = None
   if 'verbose' in job:
     args.verbose = job['verbose']
   if 'skipms' in job:
@@ -194,6 +205,8 @@ def overrideProperties(args, job):
     args.minify = job['minify']
   if 'minconfidence' in job:
     args.minconfidence = job['minconfidence']
+  else:
+    args.minconfidence = 0.1
   if 'iou' in job:
     args.iou = job['iou']
   if 'json' in job:
