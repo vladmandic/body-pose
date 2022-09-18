@@ -123,7 +123,7 @@ export async function attachControls(poseScene: PoseScene) {
     const pointerDown = (mesh: BABYLON.Mesh) => {
       poseScene.currentMesh = mesh;
       poseScene.pointerPosition = getGroundPosition();
-      if (poseScene.pointerPosition) poseScene.camera.detachControl(poseScene.canvas);
+      if (poseScene.pointerPosition) poseScene.camera.detachControl();
     };
 
     const pointerUp = () => {
