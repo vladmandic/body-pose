@@ -1,5 +1,5 @@
 {
-  "name": "human-pose",
+  "name": "body-pose",
   "version": "0.0.1",
   "description": "Advanced 3D Body Pose Analysis",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vladmandic/human-pose.git"
+    "url": "git+https://github.com/vladmandic/body-pose.git"
   },
   "author": "Vladimir Mandic <mandic00@live.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vladmandic/human-pose/issues"
+    "url": "https://github.com/vladmandic/body-pose/issues"
   },
-  "homepage": "https://github.com/vladmandic/human-pose#readme",
+  "homepage": "https://github.com/vladmandic/body-pose#readme",
   "dependencies": {
     "@babylonjs/core": "^5.23.0",
     "@babylonjs/inspector": "^5.23.0",

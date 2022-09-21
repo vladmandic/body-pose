@@ -1,6 +1,6 @@
 # Advanced 3D Body Pose Analysis
 
-[**Live Demo**](https://vladmandic.github.io/human-pose/client/index.html)  
+[**Live Demo**](https://vladmandic.github.io/body-pose/client/index.html)  
 *Note: Live demo uses pre-rendered data from sample images and videos*  
 
 <br>
